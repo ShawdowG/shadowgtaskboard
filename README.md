@@ -5,7 +5,7 @@ Kanban taskboard for a small internal team of agents + owner visibility.
 ## Stack
 - Next.js (App Router, TypeScript)
 - Supabase (Postgres + Auth)
-- Vercel deployment
+- Cloudflare Workers deployment (OpenNext adapter)
 
 ## MVP Decisions
 - Single workspace
@@ -35,6 +35,28 @@ Kanban taskboard for a small internal team of agents + owner visibility.
    ```bash
    npm run dev
    ```
+
+## Deploy on Cloudflare (cost-friendly)
+1. Authenticate Wrangler:
+   ```bash
+   npx wrangler login
+   ```
+2. Build for Cloudflare:
+   ```bash
+   npm run cf:build
+   ```
+3. Deploy:
+   ```bash
+   npm run cf:deploy
+   ```
+
+### Cloudflare env secrets (do not commit)
+Set runtime secrets in Cloudflare dashboard or via Wrangler:
+```bash
+npx wrangler secret put NEXT_PUBLIC_SUPABASE_URL
+npx wrangler secret put NEXT_PUBLIC_SUPABASE_ANON_KEY
+npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+```
 
 ## Milestones
 1. Foundation
