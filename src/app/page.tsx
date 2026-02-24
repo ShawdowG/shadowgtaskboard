@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@supabase/supabase-js";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
 
 type Status = "backlog" | "working" | "review" | "done";
 
@@ -408,6 +408,27 @@ export default function Home() {
     }
   };
 
+  const trapTabKey = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Tab") return;
+    const root = event.currentTarget;
+    const focusable = root.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
   const sendMagicLink = async () => {
     setAuthMessage(null);
     const email = authInput.trim().toLowerCase();
@@ -572,7 +593,7 @@ export default function Home() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 sm:items-center" onClick={() => setShowAddModal(false)}>
-          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Add work item</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowAddModal(false)}>Close</button>
@@ -600,7 +621,7 @@ export default function Home() {
 
       {showToolsModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 sm:items-center" onClick={() => setShowToolsModal(false)}>
-          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Filters & board tools</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowToolsModal(false)}>Close</button>
@@ -619,7 +640,7 @@ export default function Home() {
 
       {showDetailModal && selectedItem && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 sm:items-center" onClick={() => setShowDetailModal(false)}>
-          <aside className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()}>
+          <aside className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-2 flex items-center justify-between">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowDetailModal(false)}>Close</button>
