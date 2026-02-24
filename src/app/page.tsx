@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+import { useEffect, useMemo, useState } from "react";
 
 type Status = "backlog" | "working" | "review" | "done";
 
@@ -29,11 +30,15 @@ type Activity = {
   createdAt: string;
 };
 
-const LANES: { key: Status; label: string; color: string }[] = [
-  { key: "backlog", label: "Backlog", color: "#CBD5E1" },
-  { key: "working", label: "Working", color: "#93C5FD" },
-  { key: "review", label: "Review", color: "#FCD34D" },
-  { key: "done", label: "Done", color: "#86EFAC" },
+const STORAGE_KEY = "shadowg_items_v1";
+const AUTH_KEY = "shadowg_auth_email_v1";
+const storageKeyForEmail = (email: string) => `${STORAGE_KEY}_${email.toLowerCase()}`;
+
+const LANES: { key: Status; label: string; icon: string; color: string; tint: string; emptyHint: string }[] = [
+  { key: "backlog", label: "Backlog", icon: "○", color: "#dbe4ff", tint: "#f6f8ff", emptyHint: "Add ideas and upcoming tasks" },
+  { key: "working", label: "Working", icon: "◔", color: "#bfdbfe", tint: "#f3f8ff", emptyHint: "Move active work here" },
+  { key: "review", label: "Review", icon: "◑", color: "#fde68a", tint: "#fffcef", emptyHint: "Items waiting for feedback" },
+  { key: "done", label: "Done", icon: "●", color: "#bbf7d0", tint: "#f2fdf6", emptyHint: "Completed work lands here" },
 ];
 
 const seedItems: WorkItem[] = [
@@ -68,6 +73,33 @@ const seedItems: WorkItem[] = [
     createdAt: new Date().toISOString(),
   },
 ];
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase =
+  supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+
+const allowedEmailSet = new Set(
+  (process.env.NEXT_PUBLIC_ALLOWED_EMAILS ?? "")
+    .split(",")
+    .map((v) => v.trim().toLowerCase())
+    .filter(Boolean),
+);
+const allowedDomainSet = new Set(
+  (process.env.NEXT_PUBLIC_ALLOWED_DOMAINS ?? "")
+    .split(",")
+    .map((v) => v.trim().toLowerCase())
+    .filter(Boolean),
+);
+
+const isAllowedEmail = (email: string) => {
+  const normalized = email.trim().toLowerCase();
+  if (!normalized.includes("@")) return false;
+  if (allowedEmailSet.has(normalized)) return true;
+  const domain = normalized.split("@")[1];
+  if (!domain) return false;
+  return allowedDomainSet.has(domain);
+};
 
 const toCsv = (items: WorkItem[]) => {
   const head = "id,title,description,assignee,status,parentId,depth,createdAt";
@@ -129,8 +161,120 @@ export default function Home() {
   const [csvText, setCsvText] = useState("");
   const [commentText, setCommentText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [syncState, setSyncState] = useState("Local only");
+  const [hydrated, setHydrated] = useState(!supabase);
+  const [authEmail, setAuthEmail] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const cached = window.localStorage.getItem(AUTH_KEY) ?? "";
+    return isAllowedEmail(cached) ? cached : "";
+  });
+  const [authInput, setAuthInput] = useState("");
+  const [authMessage, setAuthMessage] = useState<string | null>(null);
+  const [dragOverLane, setDragOverLane] = useState<Status | null>(null);
+  const [compactMode, setCompactMode] = useState(false);
 
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
+
+  useEffect(() => {
+    if (!supabase) return;
+
+    const bootstrapAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      const sessionEmail = data.session?.user?.email?.toLowerCase() ?? "";
+      if (sessionEmail && isAllowedEmail(sessionEmail)) {
+        setAuthEmail(sessionEmail);
+        localStorage.setItem(AUTH_KEY, sessionEmail);
+      }
+      setHydrated(true);
+    };
+
+    void bootstrapAuth();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const nextEmail = session?.user?.email?.toLowerCase() ?? "";
+      if (nextEmail && isAllowedEmail(nextEmail)) {
+        setAuthEmail(nextEmail);
+        localStorage.setItem(AUTH_KEY, nextEmail);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!authEmail) return;
+
+    const boot = async () => {
+      if (supabase) {
+        const { data, error: supaError } = await supabase
+          .from("work_items")
+          .select("id,title,description,assignee,status,parent_id,depth,created_at,owner_email")
+          .eq("owner_email", authEmail)
+          .order("created_at", { ascending: false });
+
+        if (supaError) {
+          setSyncState("Supabase unavailable, using local cache");
+        } else if (data?.length) {
+          setItems(
+            data.map((row) => ({
+              id: row.id,
+              title: row.title,
+              description: row.description ?? "",
+              assignee: row.assignee ?? "unassigned",
+              status: row.status as Status,
+              parentId: row.parent_id,
+              depth: (row.depth ?? 0) as 0 | 1 | 2,
+              createdAt: row.created_at,
+            })),
+          );
+          setSyncState("Supabase connected");
+          return;
+        }
+      }
+
+      const raw = localStorage.getItem(storageKeyForEmail(authEmail));
+      if (raw) {
+        try {
+          setItems(JSON.parse(raw) as WorkItem[]);
+        } catch {
+          setItems(seedItems);
+        }
+      }
+    };
+
+    void boot();
+  }, [authEmail]);
+
+  useEffect(() => {
+    if (!authEmail) return;
+    localStorage.setItem(storageKeyForEmail(authEmail), JSON.stringify(items));
+
+    const sync = async () => {
+      if (!supabase) return;
+      const payload = items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        assignee: item.assignee,
+        status: item.status,
+        parent_id: item.parentId,
+        depth: item.depth,
+        created_at: item.createdAt,
+        owner_email: authEmail,
+      }));
+
+      const { error: upsertError } = await supabase.from("work_items").upsert(payload);
+      if (upsertError) {
+        setSyncState("Supabase sync failed, local cache active");
+      } else {
+        setSyncState("Supabase connected");
+      }
+    };
+
+    void sync();
+  }, [items, authEmail]);
 
   const filteredItems = useMemo(() => {
     return items.filter((i) => {
@@ -230,25 +374,102 @@ export default function Home() {
     }
   };
 
+  const sendMagicLink = async () => {
+    setAuthMessage(null);
+    const email = authInput.trim().toLowerCase();
+
+    const allowlistResponse = await fetch("/api/auth/allowlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!allowlistResponse.ok) {
+      setAuthMessage("Allowlist check failed.");
+      return;
+    }
+
+    const allowlistResult = (await allowlistResponse.json()) as { allowed?: boolean };
+    if (!allowlistResult.allowed || !isAllowedEmail(email)) {
+      setAuthMessage("Email not in allowlist.");
+      return;
+    }
+
+    if (!supabase) {
+      setAuthEmail(email);
+      localStorage.setItem(AUTH_KEY, email);
+      setAuthMessage("Allowed in local mode.");
+      return;
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithOtp({ email });
+    if (signInError) {
+      setAuthMessage(`Magic link failed: ${signInError.message}`);
+      return;
+    }
+
+    setAuthMessage("Magic link sent. Check inbox.");
+  };
+
+  const logout = async () => {
+    setAuthEmail("");
+    localStorage.removeItem(AUTH_KEY);
+    if (supabase) await supabase.auth.signOut();
+  };
+
+  if (!hydrated) {
+    return <main className="min-h-screen bg-slate-100 p-6 text-slate-700">Loading…</main>;
+  }
+
+  if (!authEmail) {
+    return (
+      <main className="min-h-screen bg-slate-100 p-5 text-slate-900">
+        <div className="mx-auto mt-20 max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+          <h1 className="text-xl font-semibold">ShadowGTaskBoard</h1>
+          <p className="text-sm text-slate-600">Sign in with an allowlisted email to access the board.</p>
+          <input
+            className="w-full rounded-lg border border-slate-200 p-2"
+            placeholder="you@company.com"
+            value={authInput}
+            onChange={(e) => setAuthInput(e.target.value)}
+          />
+          <button className="w-full rounded-lg bg-slate-900 px-3 py-2 text-white" onClick={sendMagicLink}>
+            Continue
+          </button>
+          {authMessage && <p className="text-xs text-slate-600">{authMessage}</p>}
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-slate-50 p-5 text-slate-900">
-      <div className="mx-auto max-w-7xl space-y-4">
-        <header className="rounded-xl bg-white p-4 shadow-sm">
-          <h1 className="text-xl font-bold">ShadowGTaskBoard MVP</h1>
-          <p className="text-sm text-slate-600">Single workspace · 4 lanes · max depth 3 · comments + activity · CSV import/export</p>
+    <main className="min-h-screen p-4 text-slate-900 md:p-6">
+      <div className="mx-auto max-w-[1400px] space-y-5">
+        <header className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur md:p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">ShadowGTaskBoard</h1>
+              <p className="text-sm text-slate-600">Focused Kanban workspace · 4 lanes · hierarchy depth 3 · comments/activity</p>
+              <p className="mt-1 text-xs text-slate-500">Sync: {syncState}</p>
+            </div>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
+              <p className="text-xs text-slate-500">{authEmail}</p>
+              <button className="mt-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50" onClick={logout}>Sign out</button>
+            </div>
+          </div>
         </header>
 
-        <section className="grid gap-3 rounded-xl bg-white p-4 shadow-sm md:grid-cols-6">
-          <input className="rounded border p-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="rounded border p-2" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-          <select className="rounded border p-2" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+        <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
+          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+          <select className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
             {LANES.map((lane) => (
               <option key={lane.key} value={lane.key}>
                 {lane.label}
               </option>
             ))}
           </select>
-          <select className="rounded border p-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
+          <select className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={parentId} onChange={(e) => setParentId(e.target.value)}>
             <option value="">No parent</option>
             {items.map((item) => (
               <option key={item.id} value={item.id}>
@@ -256,20 +477,27 @@ export default function Home() {
               </option>
             ))}
           </select>
-          <input className="rounded border p-2 md:col-span-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-          <button className="rounded bg-slate-900 px-3 py-2 text-white md:col-span-6" onClick={addItem}>
+          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <button className="rounded-lg bg-slate-900 px-3 py-2 text-white transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6" onClick={addItem}>
             Add Work Item
           </button>
           {error && <p className="text-sm text-red-600 md:col-span-6">{error}</p>}
         </section>
 
-        <section className="grid gap-3 rounded-xl bg-white p-4 shadow-sm md:grid-cols-6">
-          <input className="rounded border p-2" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
-          <input className="rounded border p-2 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="rounded border px-3 py-2" onClick={exportCsv}>Export CSV</button>
-          <button className="rounded border px-3 py-2" onClick={importCsv}>Import CSV</button>
+        <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
+          <p className="md:col-span-6 text-xs font-medium uppercase tracking-wide text-slate-500">Filter & board tools</p>
+          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
+          <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
+          <button
+            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            onClick={() => setCompactMode((v) => !v)}
+          >
+            Density: {compactMode ? "Compact" : "Comfortable"}
+          </button>
           <textarea
-            className="rounded border p-2 md:col-span-6"
+            className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6"
             rows={5}
             value={csvText}
             onChange={(e) => setCsvText(e.target.value)}
@@ -278,88 +506,117 @@ export default function Home() {
         </section>
 
         <section className="grid gap-3 lg:grid-cols-5">
-          <div className="grid gap-3 lg:col-span-4 lg:grid-cols-4">
+          <div className="-mx-1 overflow-x-auto px-1 lg:col-span-4">
+            <div className="grid min-w-[980px] gap-3 lg:min-w-0 lg:grid-cols-4">
             {LANES.map((lane) => (
-              <div key={lane.key} className="rounded-xl border bg-white p-3 shadow-sm">
-                <div className="mb-2 rounded px-2 py-1 text-sm font-semibold" style={{ backgroundColor: lane.color }}>
-                  {lane.label}
+              <div
+                key={lane.key}
+                className={`rounded-2xl border p-3 shadow-sm transition-all ${dragOverLane === lane.key ? "border-slate-400 shadow-md" : "border-slate-200"}`}
+                style={{ backgroundColor: lane.tint }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragOverLane(lane.key);
+                }}
+                onDragLeave={() => setDragOverLane((current) => (current === lane.key ? null : current))}
+                onDrop={(e) => {
+                  const itemId = e.dataTransfer.getData("text/plain");
+                  if (itemId) moveItem(itemId, lane.key);
+                  setDragOverLane(null);
+                }}
+              >
+                <div className="sticky top-0 z-10 mb-2 flex items-center justify-between rounded-lg border border-white/70 px-2 py-1 text-sm font-semibold shadow-[0_1px_0_rgba(15,23,42,0.05)] backdrop-blur" style={{ backgroundColor: lane.color }}>
+                  <span className="inline-flex items-center gap-1"><span className="text-slate-600">{lane.icon}</span>{lane.label}</span>
+                  <span className="rounded-md bg-white/70 px-1.5 py-0.5 text-xs text-slate-600">
+                    {filteredItems.filter((i) => i.status === lane.key).length}
+                  </span>
                 </div>
-                <div className="space-y-2">
+                <div className={`min-h-28 ${compactMode ? "space-y-1.5" : "space-y-2.5"}`}>
+                  {filteredItems.filter((i) => i.status === lane.key).length === 0 && (
+                    <p className="rounded-lg border border-dashed border-slate-200 px-2 py-3 text-center text-xs text-slate-400" style={{ backgroundColor: lane.color }}>
+                      <span className="mb-1 block text-sm text-slate-500">{lane.icon}</span>
+                      {lane.emptyHint}
+                    </p>
+                  )}
                   {filteredItems
                     .filter((i) => i.status === lane.key)
                     .map((item) => (
                       <article
                         key={item.id}
-                        className={`cursor-pointer rounded border p-2 text-sm ${selectedId === item.id ? "border-slate-900" : "border-slate-200"}`}
+                        draggable
+                        tabIndex={0}
+                        onDragStart={(e) => e.dataTransfer.setData("text/plain", item.id)}
+                        onDragEnd={() => setDragOverLane(null)}
+                        className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${compactMode ? "p-1.5" : "p-2.5"} ${selectedId === item.id ? "border-slate-900 bg-slate-50/60" : "border-slate-200 bg-white"}`}
                         onClick={() => setSelectedId(item.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setSelectedId(item.id);
+                          }
+                        }}
                       >
-                        <h3 className="font-medium">{"↳ ".repeat(item.depth)}{item.title}</h3>
-                        <p className="text-xs text-slate-500">{item.assignee}</p>
-                        <div className="mt-2 flex flex-wrap gap-1">
-                          {LANES.filter((l) => l.key !== item.status).map((l) => (
-                            <button
-                              key={l.key}
-                              className="rounded border px-2 py-1 text-xs"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                moveItem(item.id, l.key);
-                              }}
-                            >
-                              Move to {l.label}
-                            </button>
-                          ))}
+                        <h3 className={`font-semibold leading-snug tracking-tight ${compactMode ? "text-[12px]" : "text-[13px]"}`}>{"↳ ".repeat(item.depth)}{item.title}</h3>
+                        <div className={compactMode ? "mt-0.5" : "mt-1"}>
+                          <span className={`inline-flex items-center rounded-full border border-slate-200 bg-slate-50 font-medium uppercase tracking-wide text-slate-600 ${compactMode ? "px-1.5 py-0.5 text-[9px]" : "px-2 py-0.5 text-[10px]"}`}>
+                            {item.assignee}
+                          </span>
                         </div>
                       </article>
                     ))}
                 </div>
               </div>
             ))}
+            </div>
           </div>
 
-          <aside className="rounded-xl border bg-white p-3 shadow-sm">
-            <h2 className="mb-2 font-semibold">Item Detail</h2>
-            {!selectedItem && <p className="text-sm text-slate-500">Select a card to view details.</p>}
+          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
+            {!selectedItem && <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">Select a card to view details.</p>}
             {selectedItem && (
               <div className="space-y-3 text-sm">
-                <div>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                   <p className="font-medium">{selectedItem.title}</p>
                   <p className="text-slate-600">{selectedItem.description || "No description"}</p>
-                  <p className="text-xs text-slate-500">Assignee: {selectedItem.assignee}</p>
+                  <div className="mt-1">
+                    <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-600">
+                      {selectedItem.assignee}
+                    </span>
+                  </div>
                 </div>
 
-                <div>
-                  <p className="mb-1 font-medium">Comments (markdown text)</p>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Comments (markdown text)</p>
                   <textarea
                     rows={3}
-                    className="w-full rounded border p-2"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
                     placeholder="Write comment..."
                   />
-                  <button className="mt-1 rounded border px-2 py-1" onClick={addComment}>
+                  <button className="mt-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={addComment}>
                     Add Comment
                   </button>
                   <div className="mt-2 space-y-1">
                     {comments
                       .filter((c) => c.itemId === selectedItem.id)
                       .map((c) => (
-                        <div key={c.id} className="rounded bg-slate-100 p-2 text-xs">
-                          <p>{c.body}</p>
-                          <p className="text-slate-500">{c.createdAt}</p>
+                        <div key={c.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                          <p className="text-slate-700">{c.body}</p>
+                          <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{c.createdAt}</p>
                         </div>
                       ))}
                   </div>
                 </div>
 
-                <div>
-                  <p className="mb-1 font-medium">Activity</p>
+                <div className="border-t border-slate-100 pt-3">
+                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Activity</p>
                   <div className="space-y-1">
                     {activity
                       .filter((a) => a.itemId === selectedItem.id)
                       .map((a) => (
-                        <div key={a.id} className="rounded bg-slate-100 p-2 text-xs">
-                          <p>{a.message}</p>
-                          <p className="text-slate-500">{a.createdAt}</p>
+                        <div key={a.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                          <p className="text-slate-700">{a.message}</p>
+                          <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{a.createdAt}</p>
                         </div>
                       ))}
                   </div>
