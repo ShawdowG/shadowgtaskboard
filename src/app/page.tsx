@@ -175,6 +175,9 @@ export default function Home() {
   const [dragOverLane, setDragOverLane] = useState<Status | null>(null);
   const [lastMovedItemId, setLastMovedItemId] = useState<string | null>(null);
   const [compactMode, setCompactMode] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showToolsModal, setShowToolsModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
 
@@ -339,6 +342,7 @@ export default function Home() {
     setDescription("");
     setAssignee("");
     setParentId("");
+    setShowAddModal(false);
   };
 
   const moveItem = (itemId: string, nextStatus: Status) => {
@@ -350,7 +354,7 @@ export default function Home() {
       }),
     );
     setLastMovedItemId(itemId);
-    window.setTimeout(() => setLastMovedItemId((current) => (current === itemId ? null : current)), 450);
+    window.setTimeout(() => setLastMovedItemId((current) => (current === itemId ? null : current)), 320);
   };
 
   const addComment = () => {
@@ -373,6 +377,7 @@ export default function Home() {
       const parsed = parseCsv(csvText);
       setItems(parsed);
       setSelectedId(null);
+      setShowDetailModal(false);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Invalid CSV import");
@@ -429,7 +434,7 @@ export default function Home() {
   if (!authEmail) {
     return (
       <main className="min-h-screen bg-slate-100 p-5 text-slate-900">
-        <div className="mx-auto mt-20 max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
+        <div className="mx-auto mt-20 max-w-md space-y-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h1 className="text-xl font-semibold">ShadowGTaskBoard</h1>
           <p className="text-sm text-slate-600">Sign in with an allowlisted email to access the board.</p>
           <input
@@ -457,66 +462,28 @@ export default function Home() {
               <p className="text-sm text-slate-600">Focused Kanban workspace · 4 lanes · hierarchy depth 3 · comments/activity</p>
               <p className="mt-1 text-xs text-slate-500">Sync: {syncState}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
-              <p className="text-xs text-slate-500">{authEmail}</p>
-              <button className="mt-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50" onClick={logout}>Sign out</button>
+            <div className="flex items-start gap-2">
+              <button className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
+                + Add Item
+              </button>
+              <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
+                Filters & Tools
+              </button>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
+                <p className="text-xs text-slate-500">{authEmail}</p>
+                <button className="mt-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50" onClick={logout}>Sign out</button>
+              </div>
             </div>
           </div>
+          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </header>
 
-        <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
-          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-          <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
-            {LANES.map((lane) => (
-              <option key={lane.key} value={lane.key}>
-                {lane.label}
-              </option>
-            ))}
-          </select>
-          <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={parentId} onChange={(e) => setParentId(e.target.value)}>
-            <option value="">No parent</option>
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>
-                {"-".repeat(item.depth)} {item.title}
-              </option>
-            ))}
-          </select>
-          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-          <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6" onClick={addItem}>
-            Add Work Item
-          </button>
-          {error && <p className="text-sm text-red-600 md:col-span-6">{error}</p>}
-        </section>
-
-        <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
-          <p className="md:col-span-6 text-xs font-medium uppercase tracking-wide text-slate-500">Filter & board tools</p>
-          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
-          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
-          <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
-          <button
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
-            onClick={() => setCompactMode((v) => !v)}
-          >
-            Density: {compactMode ? "Compact" : "Comfortable"}
-          </button>
-          <textarea
-            className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6"
-            rows={5}
-            value={csvText}
-            onChange={(e) => setCsvText(e.target.value)}
-            placeholder="CSV payload"
-          />
-        </section>
-
-        <section className="grid gap-3 lg:grid-cols-5">
-          <div className="-mx-1 overflow-x-auto px-1 lg:col-span-4">
-            <div className="grid min-w-[980px] gap-3 lg:min-w-0 lg:grid-cols-4">
+        <section className="-mx-1 overflow-x-auto px-1">
+          <div className="grid min-w-[980px] gap-3 lg:min-w-0 lg:grid-cols-4">
             {LANES.map((lane) => (
               <div
                 key={lane.key}
-                className={`rounded-2xl border p-3 shadow-sm transition-all ${dragOverLane === lane.key ? "border-slate-400 shadow-md" : "border-slate-200"}`}
+                className={`rounded-2xl border p-3 shadow-sm transition-all duration-150 ${dragOverLane === lane.key ? "-translate-y-0.5 border-slate-400 shadow-md" : "border-slate-200"}`}
                 style={{ backgroundColor: lane.tint }}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -551,12 +518,16 @@ export default function Home() {
                         tabIndex={0}
                         onDragStart={(e) => e.dataTransfer.setData("text/plain", item.id)}
                         onDragEnd={() => setDragOverLane(null)}
-                        className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${lastMovedItemId === item.id ? "ring-2 ring-emerald-200" : ""} ${compactMode ? "p-1.5" : "p-2.5"} ${selectedId === item.id ? "border-slate-900 bg-slate-50/60" : "border-slate-200 bg-white"}`}
-                        onClick={() => setSelectedId(item.id)}
+                        className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${lastMovedItemId === item.id ? "ring-2 ring-emerald-200" : ""} ${compactMode ? "p-1.5" : "p-2.5"} border-slate-200 bg-white`}
+                        onClick={() => {
+                          setSelectedId(item.id);
+                          setShowDetailModal(true);
+                        }}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
                             setSelectedId(item.id);
+                            setShowDetailModal(true);
                           }
                         }}
                       >
@@ -571,66 +542,116 @@ export default function Home() {
                 </div>
               </div>
             ))}
-            </div>
           </div>
-
-          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
-            {!selectedItem && <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500">Select a card to view details.</p>}
-            {selectedItem && (
-              <div className="space-y-3 text-sm">
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
-                  <p className="font-medium">{selectedItem.title}</p>
-                  <p className="text-slate-600">{selectedItem.description || "No description"}</p>
-                  <div className="mt-1">
-                    <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-600">
-                      {selectedItem.assignee}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Comments (markdown text)</p>
-                  <textarea
-                    rows={3}
-                    className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Write comment..."
-                  />
-                  <button className="mt-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={addComment}>
-                    Add Comment
-                  </button>
-                  <div className="mt-2 space-y-1">
-                    {comments
-                      .filter((c) => c.itemId === selectedItem.id)
-                      .map((c) => (
-                        <div key={c.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-                          <p className="text-slate-700">{c.body}</p>
-                          <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{c.createdAt}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-100 pt-3">
-                  <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Activity</p>
-                  <div className="space-y-1">
-                    {activity
-                      .filter((a) => a.itemId === selectedItem.id)
-                      .map((a) => (
-                        <div key={a.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-                          <p className="text-slate-700">{a.message}</p>
-                          <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{a.createdAt}</p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </aside>
         </section>
       </div>
+
+      {showAddModal && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 sm:items-center" onClick={() => setShowAddModal(false)}>
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Add work item</h2>
+              <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowAddModal(false)}>Close</button>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+                {LANES.map((lane) => (
+                  <option key={lane.key} value={lane.key}>{lane.label}</option>
+                ))}
+              </select>
+              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
+                <option value="">No parent</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>{"-".repeat(item.depth)} {item.title}</option>
+                ))}
+              </select>
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-6" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white sm:col-span-2 md:col-span-6" onClick={() => { addItem(); setShowAddModal(false); }}>Add Work Item</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showToolsModal && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 sm:items-center" onClick={() => setShowToolsModal(false)}>
+          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Filters & board tools</h2>
+              <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowToolsModal(false)}>Close</button>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={exportCsv}>Export CSV</button>
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={importCsv}>Import CSV</button>
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
+              <textarea className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDetailModal && selectedItem && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 sm:items-center" onClick={() => setShowDetailModal(false)}>
+          <aside className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-2 flex items-center justify-between">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
+              <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowDetailModal(false)}>Close</button>
+            </div>
+            <div className="space-y-3 text-sm">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+                <p className="font-medium">{selectedItem.title}</p>
+                <p className="text-slate-600">{selectedItem.description || "No description"}</p>
+                <div className="mt-1">
+                  <span className="inline-flex items-center rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-600">
+                    {selectedItem.assignee}
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-3">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Comments (markdown text)</p>
+                <textarea
+                  rows={3}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm"
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Write comment..."
+                />
+                <button className="mt-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs" onClick={addComment}>
+                  Add Comment
+                </button>
+                <div className="mt-2 space-y-1">
+                  {comments
+                    .filter((c) => c.itemId === selectedItem.id)
+                    .map((c) => (
+                      <div key={c.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                        <p className="text-slate-700">{c.body}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{c.createdAt}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-100 pt-3">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Activity</p>
+                <div className="space-y-1">
+                  {activity
+                    .filter((a) => a.itemId === selectedItem.id)
+                    .map((a) => (
+                      <div key={a.id} className="rounded-lg border border-slate-200 bg-white p-2 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                        <p className="text-slate-700">{a.message}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-400">{a.createdAt}</p>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
     </main>
   );
 }
