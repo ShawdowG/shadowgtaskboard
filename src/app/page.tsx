@@ -596,9 +596,9 @@ export default function Home() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowAddModal(false)}>
-          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div role="dialog" aria-modal="true" aria-labelledby="add-item-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Add work item</h2>
+              <h2 id="add-item-title" className="text-lg font-semibold">Add work item</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowAddModal(false)}>Close</button>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
@@ -624,9 +624,9 @@ export default function Home() {
 
       {showToolsModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowToolsModal(false)}>
-          <div className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div role="dialog" aria-modal="true" aria-labelledby="tools-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Filters & board tools</h2>
+              <h2 id="tools-title" className="text-lg font-semibold">Filters & board tools</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowToolsModal(false)}>Close</button>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
@@ -643,9 +643,9 @@ export default function Home() {
 
       {showDetailModal && selectedItem && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowDetailModal(false)}>
-          <aside className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <aside role="dialog" aria-modal="true" aria-labelledby="detail-title" className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-2 flex items-center justify-between">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
+              <h2 id="detail-title" className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowDetailModal(false)}>Close</button>
             </div>
             <div className="space-y-3 text-sm">
