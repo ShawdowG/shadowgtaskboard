@@ -621,7 +621,7 @@ export default function Home() {
                 ))}
               </select>
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-6" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-              <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white sm:col-span-2 md:col-span-6" onClick={() => { addItem(); setShowAddModal(false); }}>Add Work Item</button>
+              <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 sm:col-span-2 md:col-span-6" onClick={() => { addItem(); setShowAddModal(false); }}>Add Work Item</button>
             </div>
           </div>
         </div>
@@ -638,9 +638,9 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
               <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
-              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={exportCsv}>Export CSV</button>
-              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={importCsv}>Import CSV</button>
-              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
+              <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
               <textarea className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
             </div>
           </div>
