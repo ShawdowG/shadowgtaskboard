@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 
 type Payload = { email?: string };
 
+const defaultAllowedEmails = ["kantasitms1@outlook.com"];
+
 const emailSet = new Set(
-  (process.env.ALLOWED_EMAILS ?? process.env.NEXT_PUBLIC_ALLOWED_EMAILS ?? "")
+  (process.env.ALLOWED_EMAILS ?? process.env.NEXT_PUBLIC_ALLOWED_EMAILS ?? defaultAllowedEmails.join(","))
     .split(",")
     .map((v) => v.trim().toLowerCase())
     .filter(Boolean),

@@ -79,8 +79,10 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const supabase =
   supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
+const defaultAllowedEmails = ["kantasitms1@outlook.com"];
+
 const allowedEmailSet = new Set(
-  (process.env.NEXT_PUBLIC_ALLOWED_EMAILS ?? "")
+  (process.env.NEXT_PUBLIC_ALLOWED_EMAILS ?? defaultAllowedEmails.join(","))
     .split(",")
     .map((v) => v.trim().toLowerCase())
     .filter(Boolean),
@@ -171,6 +173,7 @@ export default function Home() {
   const [authInput, setAuthInput] = useState("");
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [dragOverLane, setDragOverLane] = useState<Status | null>(null);
+  const [lastMovedItemId, setLastMovedItemId] = useState<string | null>(null);
   const [compactMode, setCompactMode] = useState(false);
 
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
@@ -346,6 +349,8 @@ export default function Home() {
         return { ...i, status: nextStatus };
       }),
     );
+    setLastMovedItemId(itemId);
+    window.setTimeout(() => setLastMovedItemId((current) => (current === itemId ? null : current)), 450);
   };
 
   const addComment = () => {
@@ -460,16 +465,16 @@ export default function Home() {
         </header>
 
         <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
-          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-          <select className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+          <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
             {LANES.map((lane) => (
               <option key={lane.key} value={lane.key}>
                 {lane.label}
               </option>
             ))}
           </select>
-          <select className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={parentId} onChange={(e) => setParentId(e.target.value)}>
+          <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={parentId} onChange={(e) => setParentId(e.target.value)}>
             <option value="">No parent</option>
             {items.map((item) => (
               <option key={item.id} value={item.id}>
@@ -477,8 +482,8 @@ export default function Home() {
               </option>
             ))}
           </select>
-          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-          <button className="rounded-lg bg-slate-900 px-3 py-2 text-white transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6" onClick={addItem}>
+          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+          <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white transition-colors hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6" onClick={addItem}>
             Add Work Item
           </button>
           {error && <p className="text-sm text-red-600 md:col-span-6">{error}</p>}
@@ -486,12 +491,12 @@ export default function Home() {
 
         <section className="grid gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm md:grid-cols-6">
           <p className="md:col-span-6 text-xs font-medium uppercase tracking-wide text-slate-500">Filter & board tools</p>
-          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
-          <input className="rounded-lg border border-slate-200 bg-slate-50 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
-          <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
+          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+          <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
+          <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
+          <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
           <button
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
             onClick={() => setCompactMode((v) => !v)}
           >
             Density: {compactMode ? "Compact" : "Comfortable"}
@@ -546,7 +551,7 @@ export default function Home() {
                         tabIndex={0}
                         onDragStart={(e) => e.dataTransfer.setData("text/plain", item.id)}
                         onDragEnd={() => setDragOverLane(null)}
-                        className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${compactMode ? "p-1.5" : "p-2.5"} ${selectedId === item.id ? "border-slate-900 bg-slate-50/60" : "border-slate-200 bg-white"}`}
+                        className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${lastMovedItemId === item.id ? "ring-2 ring-emerald-200" : ""} ${compactMode ? "p-1.5" : "p-2.5"} ${selectedId === item.id ? "border-slate-900 bg-slate-50/60" : "border-slate-200 bg-white"}`}
                         onClick={() => setSelectedId(item.id)}
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
