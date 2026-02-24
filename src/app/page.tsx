@@ -607,20 +607,20 @@ export default function Home() {
             </div>
             <p id="add-item-desc" className="mb-3 text-xs text-slate-500">Fill all fields and submit to create a new card.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
                 {LANES.map((lane) => (
                   <option key={lane.key} value={lane.key}>{lane.label}</option>
                 ))}
               </select>
-              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
+              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
                 <option value="">No parent</option>
                 {items.map((item) => (
                   <option key={item.id} value={item.id}>{"-".repeat(item.depth)} {item.title}</option>
                 ))}
               </select>
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-6" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-6" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
               <button className="h-10 rounded-lg bg-slate-900 px-3 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 sm:col-span-2 md:col-span-6" onClick={() => { addItem(); setShowAddModal(false); }}>Add Work Item</button>
             </div>
           </div>
@@ -636,8 +636,8 @@ export default function Home() {
             </div>
             <p id="tools-desc" className="mb-3 text-xs text-slate-500">Adjust filters, density, and CSV import/export options.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
