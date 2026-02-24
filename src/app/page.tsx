@@ -564,6 +564,9 @@ export default function Home() {
                         key={item.id}
                         draggable
                         tabIndex={0}
+                        role="button"
+                        aria-haspopup="dialog"
+                        aria-expanded={showDetailModal && selectedId === item.id}
                         onDragStart={(e) => e.dataTransfer.setData("text/plain", item.id)}
                         onDragEnd={() => setDragOverLane(null)}
                         className={`cursor-pointer rounded-lg border text-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 active:scale-[0.99] ${lastMovedItemId === item.id ? "ring-2 ring-emerald-200" : ""} ${compactMode ? "p-1.5" : "p-2.5"} border-slate-200 bg-white`}
