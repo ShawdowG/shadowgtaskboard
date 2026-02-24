@@ -1,7 +1,7 @@
 "use client";
 
 import { createClient } from "@supabase/supabase-js";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Status = "backlog" | "working" | "review" | "done";
 
@@ -178,11 +178,15 @@ export default function Home() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showToolsModal, setShowToolsModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const lastFocusedRef = useRef<HTMLElement | null>(null);
 
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
 
   useEffect(() => {
     if (!showAddModal && !showToolsModal && !showDetailModal) return;
+    if (!lastFocusedRef.current) {
+      lastFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       setShowAddModal(false);
@@ -191,6 +195,14 @@ export default function Home() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showAddModal, showToolsModal, showDetailModal]);
+
+  useEffect(() => {
+    if (showAddModal || showToolsModal || showDetailModal) return;
+    if (lastFocusedRef.current) {
+      lastFocusedRef.current.focus();
+      lastFocusedRef.current = null;
+    }
   }, [showAddModal, showToolsModal, showDetailModal]);
 
   useEffect(() => {
@@ -566,7 +578,7 @@ export default function Home() {
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowAddModal(false)}>Close</button>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
               <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
                 {LANES.map((lane) => (
@@ -594,7 +606,7 @@ export default function Home() {
               <button className="rounded-md border border-slate-200 px-2 py-1 text-xs" onClick={() => setShowToolsModal(false)}>Close</button>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={exportCsv}>Export CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm" onClick={importCsv}>Import CSV</button>
@@ -626,6 +638,7 @@ export default function Home() {
               <div className="border-t border-slate-100 pt-3">
                 <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Comments (markdown text)</p>
                 <textarea
+                  autoFocus
                   rows={3}
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm"
                   value={commentText}
