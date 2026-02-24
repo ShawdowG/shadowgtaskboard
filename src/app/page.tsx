@@ -608,8 +608,8 @@ export default function Home() {
             </div>
             <p id="add-item-desc" className="mb-3 text-xs text-slate-500">Fill all fields and submit to create a new card.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+              <input aria-label="Work item title" autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <input aria-label="Assignee" className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
               <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
                 {LANES.map((lane) => (
                   <option key={lane.key} value={lane.key}>{lane.label}</option>
@@ -637,8 +637,8 @@ export default function Home() {
             </div>
             <p id="tools-desc" className="mb-3 text-xs text-slate-500">Adjust filters, density, and CSV import/export options.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
-              <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
-              <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
+              <input aria-label="Filter by assignee" autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
+              <input aria-label="Search title or description" className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
