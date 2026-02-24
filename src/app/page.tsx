@@ -676,7 +676,7 @@ export default function Home() {
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write comment..."
                 />
-                <button className="mt-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs" onClick={addComment}>
+                <button className="mt-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={addComment}>
                   Add Comment
                 </button>
                 <div className="mt-2 space-y-1">
