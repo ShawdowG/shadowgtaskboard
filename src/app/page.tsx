@@ -486,7 +486,7 @@ export default function Home() {
           <h1 className="text-xl font-semibold">ShadowGTaskBoard</h1>
           <p className="text-sm text-slate-600">Sign in with an allowlisted email to access the board.</p>
           <input
-            className="w-full rounded-lg border border-slate-200 p-2"
+            className="w-full rounded-lg border border-slate-200 p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
             placeholder="you@company.com"
             value={authInput}
             onChange={(e) => setAuthInput(e.target.value)}
