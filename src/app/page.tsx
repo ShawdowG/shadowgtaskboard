@@ -491,7 +491,7 @@ export default function Home() {
             value={authInput}
             onChange={(e) => setAuthInput(e.target.value)}
           />
-          <button className="w-full rounded-lg bg-slate-900 px-3 py-2 text-white" onClick={sendMagicLink}>
+          <button className="w-full rounded-lg bg-slate-900 px-3 py-2 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={sendMagicLink}>
             Continue
           </button>
           {authMessage && <p className="text-xs text-slate-600">{authMessage}</p>}
@@ -511,10 +511,10 @@ export default function Home() {
               <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState}</p>
             </div>
             <div className="flex items-start gap-2">
-              <button aria-haspopup="dialog" aria-controls="add-item-modal" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
+              <button aria-haspopup="dialog" aria-controls="add-item-modal" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowAddModal(true)}>
                 + Add Item
               </button>
-              <button aria-haspopup="dialog" aria-controls="tools-modal" aria-expanded={showToolsModal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
+              <button aria-haspopup="dialog" aria-controls="tools-modal" aria-expanded={showToolsModal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowToolsModal(true)}>
                 Filters & Tools
               </button>
               <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
