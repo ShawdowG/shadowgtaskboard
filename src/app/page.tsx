@@ -179,6 +179,7 @@ export default function Home() {
   const [showToolsModal, setShowToolsModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const lastFocusedRef = useRef<HTMLElement | null>(null);
+  const addButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
 
@@ -202,7 +203,9 @@ export default function Home() {
     if (lastFocusedRef.current) {
       lastFocusedRef.current.focus();
       lastFocusedRef.current = null;
+      return;
     }
+    addButtonRef.current?.focus();
   }, [showAddModal, showToolsModal, showDetailModal]);
 
   useEffect(() => {
@@ -508,7 +511,7 @@ export default function Home() {
               <p className="mt-1 text-xs text-slate-500">Sync: {syncState}</p>
             </div>
             <div className="flex items-start gap-2">
-              <button className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
+              <button ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
                 + Add Item
               </button>
               <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
