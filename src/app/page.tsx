@@ -523,7 +523,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
         </header>
 
         <section aria-label="Kanban board" className="-mx-1 overflow-x-auto px-1">
