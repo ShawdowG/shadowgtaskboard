@@ -610,12 +610,12 @@ export default function Home() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
               <input aria-label="Work item title" autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
               <input aria-label="Assignee" className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
+              <select aria-label="Status" className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" value={status} onChange={(e) => setStatus(e.target.value as Status)}>
                 {LANES.map((lane) => (
                   <option key={lane.key} value={lane.key}>{lane.label}</option>
                 ))}
               </select>
-              <select className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
+              <select aria-label="Parent task" className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 md:col-span-2" value={parentId} onChange={(e) => setParentId(e.target.value)}>
                 <option value="">No parent</option>
                 {items.map((item) => (
                   <option key={item.id} value={item.id}>{"-".repeat(item.depth)} {item.title}</option>
@@ -642,7 +642,7 @@ export default function Home() {
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
-              <textarea className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
+              <textarea aria-label="CSV payload" className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
             </div>
           </div>
         </div>
@@ -670,6 +670,7 @@ export default function Home() {
               <div className="border-t border-slate-100 pt-3">
                 <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Comments (markdown text)</p>
                 <textarea
+                  aria-label="Comment text"
                   autoFocus
                   rows={3}
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
