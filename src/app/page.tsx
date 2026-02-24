@@ -526,7 +526,7 @@ export default function Home() {
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </header>
 
-        <section className="-mx-1 overflow-x-auto px-1">
+        <section aria-label="Kanban board" className="-mx-1 overflow-x-auto px-1">
           <div className="grid min-w-[980px] gap-3 lg:min-w-0 lg:grid-cols-4">
             {LANES.map((lane) => (
               <div
@@ -600,11 +600,12 @@ export default function Home() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowAddModal(false)}>
-          <div id="add-item-modal" role="dialog" aria-modal="true" aria-labelledby="add-item-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div id="add-item-modal" role="dialog" aria-modal="true" aria-labelledby="add-item-title" aria-describedby="add-item-desc" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 id="add-item-title" className="text-lg font-semibold">Add work item</h2>
               <button aria-label="Close add item modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowAddModal(false)}>Close</button>
             </div>
+            <p id="add-item-desc" className="mb-3 text-xs text-slate-500">Fill all fields and submit to create a new card.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
               <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
