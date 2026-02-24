@@ -641,7 +641,7 @@ export default function Home() {
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={exportCsv}>Export CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={importCsv}>Import CSV</button>
               <button className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setCompactMode((v) => !v)}>Density: {compactMode ? "Compact" : "Comfortable"}</button>
-              <textarea className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
+              <textarea className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 sm:col-span-2 md:col-span-6" rows={5} value={csvText} onChange={(e) => setCsvText(e.target.value)} placeholder="CSV payload" />
             </div>
           </div>
         </div>
@@ -671,7 +671,7 @@ export default function Home() {
                 <textarea
                   autoFocus
                   rows={3}
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 p-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300"
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   placeholder="Write comment..."
