@@ -511,10 +511,10 @@ export default function Home() {
               <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState}</p>
             </div>
             <div className="flex items-start gap-2">
-              <button aria-haspopup="dialog" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
+              <button aria-haspopup="dialog" aria-controls="add-item-modal" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
                 + Add Item
               </button>
-              <button aria-haspopup="dialog" aria-expanded={showToolsModal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
+              <button aria-haspopup="dialog" aria-controls="tools-modal" aria-expanded={showToolsModal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
                 Filters & Tools
               </button>
               <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
@@ -566,6 +566,7 @@ export default function Home() {
                         tabIndex={0}
                         role="button"
                         aria-haspopup="dialog"
+                        aria-controls="detail-modal"
                         aria-expanded={showDetailModal && selectedId === item.id}
                         onDragStart={(e) => e.dataTransfer.setData("text/plain", item.id)}
                         onDragEnd={() => setDragOverLane(null)}
@@ -599,7 +600,7 @@ export default function Home() {
 
       {showAddModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowAddModal(false)}>
-          <div role="dialog" aria-modal="true" aria-labelledby="add-item-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div id="add-item-modal" role="dialog" aria-modal="true" aria-labelledby="add-item-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 id="add-item-title" className="text-lg font-semibold">Add work item</h2>
               <button aria-label="Close add item modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowAddModal(false)}>Close</button>
@@ -627,7 +628,7 @@ export default function Home() {
 
       {showToolsModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowToolsModal(false)}>
-          <div role="dialog" aria-modal="true" aria-labelledby="tools-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div id="tools-modal" role="dialog" aria-modal="true" aria-labelledby="tools-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 id="tools-title" className="text-lg font-semibold">Filters & board tools</h2>
               <button aria-label="Close filters and tools modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowToolsModal(false)}>Close</button>
@@ -646,7 +647,7 @@ export default function Home() {
 
       {showDetailModal && selectedItem && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowDetailModal(false)}>
-          <aside role="dialog" aria-modal="true" aria-labelledby="detail-title" className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <aside id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-2 flex items-center justify-between">
               <h2 id="detail-title" className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
               <button aria-label="Close item detail modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowDetailModal(false)}>Close</button>
