@@ -629,11 +629,12 @@ export default function Home() {
 
       {showToolsModal && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowToolsModal(false)}>
-          <div id="tools-modal" role="dialog" aria-modal="true" aria-labelledby="tools-title" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <div id="tools-modal" role="dialog" aria-modal="true" aria-labelledby="tools-title" aria-describedby="tools-desc" className="w-full max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-3 flex items-center justify-between">
               <h2 id="tools-title" className="text-lg font-semibold">Filters & board tools</h2>
               <button aria-label="Close filters and tools modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowToolsModal(false)}>Close</button>
             </div>
+            <p id="tools-desc" className="mb-3 text-xs text-slate-500">Adjust filters, density, and CSV import/export options.</p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-6">
               <input autoFocus className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm" placeholder="Filter assignee" value={filterAssignee} onChange={(e) => setFilterAssignee(e.target.value)} />
               <input className="h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm md:col-span-2" placeholder="Search title/description" value={search} onChange={(e) => setSearch(e.target.value)} />
@@ -648,11 +649,12 @@ export default function Home() {
 
       {showDetailModal && selectedItem && (
         <div className="fixed inset-0 z-40 flex items-end justify-center bg-slate-900/40 p-3 transition-opacity duration-150 motion-reduce:transition-none sm:items-center" onClick={() => setShowDetailModal(false)}>
-          <aside id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
+          <aside id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title" aria-describedby="detail-desc" className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 shadow-xl transition-all duration-150 motion-reduce:transition-none sm:translate-y-0" onClick={(e) => e.stopPropagation()} onKeyDown={trapTabKey}>
             <div className="mb-2 flex items-center justify-between">
               <h2 id="detail-title" className="text-sm font-semibold uppercase tracking-wide text-slate-500">Item detail</h2>
               <button aria-label="Close item detail modal" className="rounded-md border border-slate-200 px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowDetailModal(false)}>Close</button>
             </div>
+            <p id="detail-desc" className="mb-3 text-xs text-slate-500">View details, add comments, and review activity for the selected card.</p>
             <div className="space-y-3 text-sm">
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                 <p className="font-medium">{selectedItem.title}</p>
