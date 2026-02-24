@@ -511,10 +511,10 @@ export default function Home() {
               <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState}</p>
             </div>
             <div className="flex items-start gap-2">
-              <button ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
+              <button aria-haspopup="dialog" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
                 + Add Item
               </button>
-              <button className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
+              <button aria-haspopup="dialog" aria-expanded={showToolsModal} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm" onClick={() => setShowToolsModal(true)}>
                 Filters & Tools
               </button>
               <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-right">
