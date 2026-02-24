@@ -182,6 +182,18 @@ export default function Home() {
   const selectedItem = useMemo(() => items.find((i) => i.id === selectedId) ?? null, [items, selectedId]);
 
   useEffect(() => {
+    if (!showAddModal && !showToolsModal && !showDetailModal) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setShowAddModal(false);
+      setShowToolsModal(false);
+      setShowDetailModal(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showAddModal, showToolsModal, showDetailModal]);
+
+  useEffect(() => {
     if (!supabase) return;
 
     const bootstrapAuth = async () => {
