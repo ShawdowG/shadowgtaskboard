@@ -508,7 +508,7 @@ export default function Home() {
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">ShadowGTaskBoard</h1>
               <p className="text-sm text-slate-600">Focused Kanban workspace · 4 lanes · hierarchy depth 3 · comments/activity</p>
-              <p className="mt-1 text-xs text-slate-500">Sync: {syncState}</p>
+              <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState}</p>
             </div>
             <div className="flex items-start gap-2">
               <button ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white" onClick={() => setShowAddModal(true)}>
