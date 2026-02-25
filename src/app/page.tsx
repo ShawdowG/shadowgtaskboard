@@ -2,6 +2,8 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
+import { applyCrudMutation } from "@/lib/board-crud";
+import { createBoardEvent, type BoardEvent } from "@/lib/board-protocol";
 
 type Status = "backlog" | "working" | "review" | "done";
 
@@ -164,6 +166,9 @@ export default function Home() {
   const [commentText, setCommentText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [syncState, setSyncState] = useState("Local only");
+  const [eventLog, setEventLog] = useState<BoardEvent[]>([]);
+  const [pendingUpserts, setPendingUpserts] = useState<Record<string, WorkItem>>({});
+  const [pendingDeletes, setPendingDeletes] = useState<Record<string, true>>({});
   const [hydrated, setHydrated] = useState(!supabase);
   const [authEmail, setAuthEmail] = useState(() => {
     if (typeof window === "undefined") return "";
@@ -283,31 +288,51 @@ export default function Home() {
   useEffect(() => {
     if (!authEmail) return;
     localStorage.setItem(storageKeyForEmail(authEmail), JSON.stringify(items));
+  }, [items, authEmail]);
+
+  useEffect(() => {
+    if (!authEmail || !supabase) return;
+
+    const upsertItems = Object.values(pendingUpserts);
+    const deleteIds = Object.keys(pendingDeletes);
+    if (upsertItems.length === 0 && deleteIds.length === 0) return;
 
     const sync = async () => {
-      if (!supabase) return;
-      const payload = items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        assignee: item.assignee,
-        status: item.status,
-        parent_id: item.parentId,
-        depth: item.depth,
-        created_at: item.createdAt,
-        owner_email: authEmail,
-      }));
+      if (upsertItems.length > 0) {
+        const payload = upsertItems.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          assignee: item.assignee,
+          status: item.status,
+          parent_id: item.parentId,
+          depth: item.depth,
+          created_at: item.createdAt,
+          owner_email: authEmail,
+        }));
 
-      const { error: upsertError } = await supabase.from("work_items").upsert(payload);
-      if (upsertError) {
-        setSyncState("Supabase sync failed, local cache active");
-      } else {
-        setSyncState("Supabase connected");
+        const { error: upsertError } = await supabase.from("work_items").upsert(payload);
+        if (upsertError) {
+          setSyncState("Supabase sync failed, local cache active");
+          return;
+        }
       }
+
+      if (deleteIds.length > 0) {
+        const { error: deleteError } = await supabase.from("work_items").delete().in("id", deleteIds);
+        if (deleteError) {
+          setSyncState("Supabase sync failed, local cache active");
+          return;
+        }
+      }
+
+      setPendingUpserts({});
+      setPendingDeletes({});
+      setSyncState("Supabase connected");
     };
 
     void sync();
-  }, [items, authEmail]);
+  }, [authEmail, pendingUpserts, pendingDeletes]);
 
   const filteredItems = useMemo(() => {
     return items.filter((i) => {
@@ -328,6 +353,19 @@ export default function Home() {
 
   const addActivity = (itemId: string, message: string) => {
     setActivity((prev) => [{ id: crypto.randomUUID(), itemId, message, createdAt: now() }, ...prev]);
+  };
+
+  const emitEvent = (event: Omit<BoardEvent, "version" | "eventId" | "occurredAt">) => {
+    setEventLog((prev) => [createBoardEvent(event), ...prev].slice(0, 200));
+  };
+
+  const queueUpsert = (item: WorkItem) => {
+    setPendingUpserts((prev) => ({ ...prev, [item.id]: item }));
+    setPendingDeletes((prev) => {
+      const next = { ...prev };
+      delete next[item.id];
+      return next;
+    });
   };
 
   const addItem = () => {
@@ -363,8 +401,15 @@ export default function Home() {
       createdAt: new Date().toISOString(),
     };
 
-    setItems((prev) => [newItem, ...prev]);
+    setItems((prev) => applyCrudMutation(prev, { type: "create", item: newItem, atStart: true }));
+    queueUpsert(newItem);
     addActivity(newItem.id, `Created in ${status}`);
+    emitEvent({
+      entity: "work_item",
+      action: "created",
+      actor: { type: "user", id: authEmail },
+      payload: { itemId: newItem.id, status: newItem.status, assignee: newItem.assignee },
+    });
     setTitle("");
     setDescription("");
     setAssignee("");
@@ -373,13 +418,21 @@ export default function Home() {
   };
 
   const moveItem = (itemId: string, nextStatus: Status) => {
-    setItems((prev) =>
-      prev.map((i) => {
-        if (i.id !== itemId) return i;
-        addActivity(itemId, `Moved ${i.status} -> ${nextStatus}`);
-        return { ...i, status: nextStatus };
-      }),
-    );
+    const before = items.find((i) => i.id === itemId);
+    if (!before) return;
+
+    setItems((prev) => applyCrudMutation(prev, { type: "update", id: itemId, patch: { status: nextStatus } }));
+
+    const updated: WorkItem = { ...before, status: nextStatus };
+    queueUpsert(updated);
+    addActivity(itemId, `Moved ${before.status} -> ${nextStatus}`);
+    emitEvent({
+      entity: "work_item",
+      action: "moved",
+      actor: { type: "user", id: authEmail },
+      payload: { itemId, from: before.status, to: nextStatus },
+    });
+
     setLastMovedItemId(itemId);
     window.setTimeout(() => setLastMovedItemId((current) => (current === itemId ? null : current)), 320);
   };
@@ -394,6 +447,12 @@ export default function Home() {
     };
     setComments((prev) => [comment, ...prev]);
     addActivity(selectedItem.id, "Comment added");
+    emitEvent({
+      entity: "comment",
+      action: "commented",
+      actor: { type: "user", id: authEmail },
+      payload: { itemId: selectedItem.id, commentId: comment.id },
+    });
     setCommentText("");
   };
 
@@ -403,6 +462,14 @@ export default function Home() {
     try {
       const parsed = parseCsv(csvText);
       setItems(parsed);
+      setPendingUpserts(Object.fromEntries(parsed.map((item) => [item.id, item])));
+      setPendingDeletes({});
+      emitEvent({
+        entity: "board",
+        action: "imported",
+        actor: { type: "user", id: authEmail },
+        payload: { items: parsed.length },
+      });
       setSelectedId(null);
       setShowDetailModal(false);
       setError(null);
@@ -509,7 +576,7 @@ export default function Home() {
             <div>
               <h1 className="text-2xl font-semibold tracking-tight">ShadowGTaskBoard</h1>
               <p className="text-sm text-slate-600">Focused Kanban workspace · 4 lanes · hierarchy depth 3 · comments/activity</p>
-              <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState}</p>
+              <p className="mt-1 text-xs text-slate-500" aria-live="polite">Sync: {syncState} · Events: {eventLog.length}</p>
             </div>
             <div className="flex items-start gap-2">
               <button aria-haspopup="dialog" aria-controls="add-item-modal" aria-expanded={showAddModal} ref={addButtonRef} className="rounded-lg bg-slate-900 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300" onClick={() => setShowAddModal(true)}>
