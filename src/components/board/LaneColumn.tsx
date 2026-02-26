@@ -5,11 +5,28 @@ import { WorkItemCard } from "./WorkItemCard";
 import { QuickAddItem } from "./QuickAddItem";
 import type { WorkItem } from "@/hooks/useBoard";
 
-const LANE_STYLES: Record<string, string> = {
-  backlog: "border-t-slate-400",
-  working: "border-t-blue-400",
-  review: "border-t-yellow-400",
-  done: "border-t-green-400",
+// Lane column background + header accent
+const LANE_STYLES: Record<string, { column: string; header: string; dot: string }> = {
+  backlog: {
+    column: "bg-slate-50/80 border-t-slate-400",
+    header: "text-slate-600",
+    dot:    "bg-slate-400",
+  },
+  working: {
+    column: "bg-blue-50/80 border-t-blue-400",
+    header: "text-blue-700",
+    dot:    "bg-blue-400",
+  },
+  review: {
+    column: "bg-amber-50/80 border-t-amber-400",
+    header: "text-amber-700",
+    dot:    "bg-amber-400",
+  },
+  done: {
+    column: "bg-green-50/80 border-t-green-400",
+    header: "text-green-700",
+    dot:    "bg-green-400",
+  },
 };
 
 interface LaneColumnProps {
@@ -35,16 +52,28 @@ export function LaneColumn({
   onDragEnd,
   isDragTarget,
 }: LaneColumnProps) {
+  const style = LANE_STYLES[laneId] ?? {
+    column: "bg-muted/40 border-t-border",
+    header: "text-foreground",
+    dot: "bg-border",
+  };
+
   return (
     <div
-      className={`flex flex-col w-72 shrink-0 bg-muted/40 rounded-lg border-t-2 ${LANE_STYLES[laneId] ?? "border-t-border"} transition-colors ${isDragTarget ? "bg-muted/70 ring-1 ring-border" : ""}`}
+      className={`flex flex-col w-72 shrink-0 rounded-lg border border-border/50 border-t-2 transition-all
+        ${style.column}
+        ${isDragTarget ? "ring-2 ring-primary/30 scale-[1.01]" : ""}
+      `}
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, laneId)}
     >
       {/* Lane header */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <span className="text-sm font-semibold">{label}</span>
-        <span className="text-xs text-muted-foreground bg-background rounded-full px-2 py-0.5 border">
+      <div className="flex items-center justify-between px-3 py-2.5">
+        <div className="flex items-center gap-2">
+          <span className={`h-2 w-2 rounded-full ${style.dot}`} />
+          <span className={`text-sm font-semibold ${style.header}`}>{label}</span>
+        </div>
+        <span className="text-xs text-muted-foreground bg-white/60 rounded-full px-2 py-0.5 border border-border/40">
           {items.length}
         </span>
       </div>
@@ -57,6 +86,7 @@ export function LaneColumn({
               key={item.id}
               item={item}
               allItems={allItems}
+              laneId={laneId}
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
             />

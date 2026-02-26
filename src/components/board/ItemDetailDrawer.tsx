@@ -23,6 +23,7 @@ import { useBoardContext } from "./BoardContext";
 import { useBoardItems, revalidateBoard } from "@/hooks/useBoard";
 import { CommentThread } from "./CommentThread";
 import { ActivityLog } from "./ActivityLog";
+import { LANE_CARD_BG } from "./WorkItemCard";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 
 const STATUS_OPTIONS = ["backlog", "working", "review", "done"] as const;
@@ -31,12 +32,17 @@ export function ItemDetailDrawer() {
   const { openItemId, setOpenItemId, projectId } = useBoardContext();
   const { data: items = [] } = useBoardItems(projectId);
   const item = items.find((i) => i.id === openItemId) ?? null;
+  const children = items.filter((i) => i.parent_id === openItemId);
 
   const [editTitle, setEditTitle] = useState("");
   const [editAssignee, setEditAssignee] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"comments" | "activity">("comments");
+  const [activeTab, setActiveTab] = useState<"subtasks" | "comments" | "activity">("subtasks");
+
+  // Quick-add subtask state
+  const [newSubtask, setNewSubtask] = useState("");
+  const [addingSubtask, setAddingSubtask] = useState(false);
 
   useEffect(() => {
     if (item) {
@@ -77,6 +83,27 @@ export function ItemDetailDrawer() {
     if (!item || !projectId) return;
     await fetch(`/api/v1/items/${item.id}`, { method: "DELETE" });
     setOpenItemId(null);
+    revalidateBoard(projectId);
+  }
+
+  async function handleAddSubtask(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newSubtask.trim() || !item || !projectId) return;
+    setAddingSubtask(true);
+    await fetch("/api/v1/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        project_id: projectId,
+        title: newSubtask.trim(),
+        status: "backlog",
+        depth: Math.min(item.depth + 1, 2),
+        parent_id: item.id,
+        assignee: item.assignee ?? null,
+      }),
+    });
+    setNewSubtask("");
+    setAddingSubtask(false);
     revalidateBoard(projectId);
   }
 
@@ -157,27 +184,67 @@ export function ItemDetailDrawer() {
 
               {/* Tabs */}
               <div className="flex gap-4 border-b">
-                {(["comments", "activity"] as const).map((tab) => (
+                {([
+                  ["subtasks", `Sub-tasks${children.length ? ` (${children.length})` : ""}`],
+                  ["comments", "Comments"],
+                  ["activity", "Activity"],
+                ] as const).map(([tab, label]) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`pb-2 text-sm capitalize transition-colors ${
+                    className={`pb-2 text-sm transition-colors ${
                       activeTab === tab
                         ? "border-b-2 border-primary font-medium"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {tab}
+                    {label}
                   </button>
                 ))}
               </div>
 
               <div className="pb-6">
-                {activeTab === "comments" ? (
-                  <CommentThread itemId={item.id} />
-                ) : (
-                  <ActivityLog itemId={item.id} />
+                {activeTab === "subtasks" && (
+                  <div className="space-y-2">
+                    {/* Existing subtasks */}
+                    {children.length === 0 && (
+                      <p className="text-xs text-muted-foreground">No sub-tasks yet.</p>
+                    )}
+                    {children.map((child) => (
+                      <div
+                        key={child.id}
+                        className={`flex items-center gap-2 rounded-md border px-3 py-2 cursor-pointer hover:shadow-sm transition-shadow ${LANE_CARD_BG[child.status] ?? "bg-white border-border"}`}
+                        onClick={() => setOpenItemId(child.id)}
+                      >
+                        <span className="flex-1 text-sm">{child.title}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{child.status}</span>
+                        {child.assignee && (
+                          <span className="text-xs bg-white/60 border rounded-full px-2 py-0 shrink-0">
+                            {child.assignee}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Add subtask form — only available if depth < 2 */}
+                    {item.depth < 2 && (
+                      <form onSubmit={handleAddSubtask} className="flex gap-2 mt-2">
+                        <Input
+                          value={newSubtask}
+                          onChange={(e) => setNewSubtask(e.target.value)}
+                          placeholder="Add sub-task..."
+                          className="text-sm h-8"
+                          disabled={addingSubtask}
+                        />
+                        <Button type="submit" size="sm" className="h-8" disabled={addingSubtask || !newSubtask.trim()}>
+                          Add
+                        </Button>
+                      </form>
+                    )}
+                  </div>
                 )}
+                {activeTab === "comments" && <CommentThread itemId={item.id} />}
+                {activeTab === "activity" && <ActivityLog itemId={item.id} />}
               </div>
             </div>
           </>
