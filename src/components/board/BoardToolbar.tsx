@@ -28,46 +28,67 @@ export function BoardToolbar() {
     if (fileRef.current) fileRef.current.value = "";
   }
 
-  const views: { id: ViewMode; label: string }[] = [
+  const boardViews: { id: ViewMode; label: string }[] = [
     { id: "kanban", label: "Kanban" },
     { id: "swimlane", label: "Swim Lanes" },
   ];
 
   return (
     <div className="flex items-center gap-2 px-4 py-2 border-b bg-background/80 backdrop-blur-sm">
-      {/* View toggle */}
-      <div className="flex rounded-md border overflow-hidden">
-        {views.map((v) => (
-          <button
-            key={v.id}
-            onClick={() => setViewMode(v.id)}
-            className={`px-3 py-1 text-xs transition-colors ${
-              viewMode === v.id
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted text-muted-foreground"
-            }`}
+      {/* Board view toggle — only shown when not in cron view */}
+      {viewMode !== "cron" && (
+        <div className="flex rounded-md border overflow-hidden">
+          {boardViews.map((v) => (
+            <button
+              key={v.id}
+              onClick={() => setViewMode(v.id)}
+              className={`px-3 py-1 text-xs transition-colors ${
+                viewMode === v.id
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted text-muted-foreground"
+              }`}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {viewMode !== "cron" && <Separator orientation="vertical" className="h-5" />}
+
+      {/* CSV tools — only when on board views */}
+      {viewMode !== "cron" && (
+        <>
+          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={handleExport} disabled={!projectId}>
+            Export CSV
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
+            onClick={() => fileRef.current?.click()}
+            disabled={!projectId}
           >
-            {v.label}
-          </button>
-        ))}
+            Import CSV
+          </Button>
+          <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
+        </>
+      )}
+
+      {/* CRON tab — pushed to the right */}
+      <div className="ml-auto">
+        <button
+          onClick={() => setViewMode(viewMode === "cron" ? "kanban" : "cron")}
+          className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-md border transition-colors ${
+            viewMode === "cron"
+              ? "bg-purple-600 text-white border-purple-600"
+              : "text-muted-foreground border-border hover:bg-muted hover:text-foreground"
+          }`}
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${viewMode === "cron" ? "bg-white" : "bg-purple-400"}`} />
+          CRON
+        </button>
       </div>
-
-      <Separator orientation="vertical" className="h-5" />
-
-      {/* CSV tools */}
-      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={handleExport} disabled={!projectId}>
-        Export CSV
-      </Button>
-      <Button
-        size="sm"
-        variant="outline"
-        className="h-7 text-xs"
-        onClick={() => fileRef.current?.click()}
-        disabled={!projectId}
-      >
-        Import CSV
-      </Button>
-      <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
     </div>
   );
 }

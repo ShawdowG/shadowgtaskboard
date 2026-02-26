@@ -112,15 +112,24 @@ export function ItemDetailDrawer() {
       <SheetContent className="w-[480px] sm:w-[540px] overflow-y-auto flex flex-col gap-0 p-0">
         {item ? (
           <>
-            <SheetHeader className="px-6 pt-6 pb-4">
-              <SheetTitle className="text-base">
-                <Input
-                  value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
-                  className="text-base font-semibold border-0 p-0 h-auto shadow-none focus-visible:ring-0"
-                  onBlur={handleSave}
-                />
-              </SheetTitle>
+            <SheetHeader className="px-6 pt-6 pb-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">Task ID</span>
+                <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5">
+                  {item.task_number != null ? `T-${item.task_number}` : "T-?"}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground">Title</span>
+                <SheetTitle className="text-base">
+                  <Input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="text-base font-semibold border-0 p-0 h-auto shadow-none focus-visible:ring-0"
+                    onBlur={handleSave}
+                  />
+                </SheetTitle>
+              </div>
             </SheetHeader>
 
             <div className="px-6 space-y-4 flex-1">

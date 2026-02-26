@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type ViewMode = "kanban" | "swimlane";
+export type ViewMode = "kanban" | "swimlane" | "cron";
 
 export interface BoardContextValue {
   projectId: string | null;

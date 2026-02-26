@@ -72,6 +72,13 @@ export function WorkItemCard({
         }}
       >
         <CardContent className={`space-y-1.5 ${depth > 0 ? "p-2" : "p-3"}`}>
+          {depth === 0 && (
+            <div className="flex items-center">
+              <span className="text-[10px] font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5 leading-none">
+                {item.task_number != null ? `T-${item.task_number}` : "T-?"}
+              </span>
+            </div>
+          )}
           <p className={`font-medium leading-snug ${depth > 0 ? "text-xs" : "text-sm"}`}>
             {item.title}
           </p>

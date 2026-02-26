@@ -54,6 +54,9 @@ export function ProjectSwitcher() {
 
   return (
     <div className="border-b px-4 py-2 flex items-center gap-3">
+      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">
+        Projects
+      </span>
       <Tabs value={projectId ?? ""} onValueChange={setProjectId}>
         <TabsList className="h-8">
           {projects.map((p) => (

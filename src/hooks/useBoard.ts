@@ -11,6 +11,7 @@ export type WorkItem = {
   sort_order: number;
   description: string | null;
   updated_at: string;
+  task_number: number | null;
 };
 
 export type Project = {
@@ -49,7 +50,7 @@ async function fetchBoardItems(projectId: string): Promise<WorkItem[]> {
   const db = getSupabaseBrowserClient();
   const { data, error } = await db
     .from("work_items")
-    .select("id,title,status,assignee,depth,parent_id,sort_order,description,updated_at")
+    .select("id,title,status,assignee,depth,parent_id,sort_order,description,updated_at,task_number")
     .eq("project_id", projectId)
     .is("archived_at", null)
     .order("sort_order", { ascending: true });

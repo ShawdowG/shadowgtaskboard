@@ -9,6 +9,7 @@ import { BoardToolbar } from "./BoardToolbar";
 import { KanbanBoard } from "./KanbanBoard";
 import { SwimLaneBoard } from "./SwimLaneBoard";
 import { ItemDetailDrawer } from "./ItemDetailDrawer";
+import { CronView } from "./CronView";
 
 export function BoardShell() {
   const { projectId, setProjectId, viewMode } = useBoardContext();
@@ -38,7 +39,13 @@ export function BoardShell() {
       <ProjectSwitcher />
       <BoardToolbar />
       <main className="flex-1 overflow-hidden">
-        {viewMode === "kanban" ? <KanbanBoard /> : <SwimLaneBoard />}
+        {viewMode === "cron" ? (
+          <CronView />
+        ) : viewMode === "kanban" ? (
+          <KanbanBoard />
+        ) : (
+          <SwimLaneBoard />
+        )}
       </main>
       <ItemDetailDrawer />
     </div>
