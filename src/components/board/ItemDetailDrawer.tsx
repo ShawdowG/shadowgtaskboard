@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -34,6 +34,7 @@ export function ItemDetailDrawer() {
   const item = items.find((i) => i.id === openItemId) ?? null;
   const children = items.filter((i) => i.parent_id === openItemId);
 
+  const [syncedItemId, setSyncedItemId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editAssignee, setEditAssignee] = useState("");
   const [editDescription, setEditDescription] = useState("");
@@ -44,13 +45,13 @@ export function ItemDetailDrawer() {
   const [newSubtask, setNewSubtask] = useState("");
   const [addingSubtask, setAddingSubtask] = useState(false);
 
-  useEffect(() => {
-    if (item) {
-      setEditTitle(item.title);
-      setEditAssignee(item.assignee ?? "");
-      setEditDescription(item.description ?? "");
-    }
-  }, [item?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // Reset edit fields when a different item is opened (setState-during-render pattern)
+  if (item && item.id !== syncedItemId) {
+    setSyncedItemId(item.id);
+    setEditTitle(item.title);
+    setEditAssignee(item.assignee ?? "");
+    setEditDescription(item.description ?? "");
+  }
 
   async function handleSave() {
     if (!item || !projectId) return;
