@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useBoardContext } from "./BoardContext";
-import { useProjects, revalidateBoard } from "@/hooks/useBoard";
+import { useProjects } from "@/hooks/useBoard";
 import { mutate } from "swr";
 
 export function ProjectSwitcher() {
