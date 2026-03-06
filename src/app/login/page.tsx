@@ -13,7 +13,8 @@ const isLocalhost =
   (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
 
 export default function LoginPage() {
-  const [mode, setMode] = useState<Mode>(isLocalhost ? "signin" : "magic");
+  // Default to password sign-in everywhere; magic link remains available as an option
+  const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stage, setStage] = useState<Stage>("idle");
