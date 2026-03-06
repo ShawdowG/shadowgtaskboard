@@ -82,6 +82,21 @@ export default function LoginPage() {
     window.location.href = "/";
   }
 
+  async function handleResetPassword(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed) return;
+    setStage("checking");
+
+    const db = getSupabaseBrowserClient();
+    const { error: resetError } = await db.auth.resetPasswordForEmail(trimmed, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
+    if (resetError) { setError(resetError.message); setStage("idle"); return; }
+    setStage("sent");
+  }
+
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -177,13 +192,23 @@ export default function LoginPage() {
               disabled={stage === "checking" || !email.trim() || !password}>
               {stage === "checking" ? "Signing in..." : "Sign in"}
             </Button>
-            <p className="text-center text-xs text-muted-foreground">
-              No account?{" "}
-              <button type="button" className="underline hover:text-foreground"
-                onClick={() => switchMode("register")}>
-                Register
+            <div className="flex flex-col gap-1 text-center text-xs text-muted-foreground">
+              <button
+                type="button"
+                className="underline hover:text-foreground"
+                onClick={handleResetPassword}
+                disabled={stage === "checking" || !email.trim()}
+              >
+                Forgot password?
               </button>
-            </p>
+              <p>
+                No account?{" "}
+                <button type="button" className="underline hover:text-foreground"
+                  onClick={() => switchMode("register")}>
+                  Register
+                </button>
+              </p>
+            </div>
           </form>
         )}
 
