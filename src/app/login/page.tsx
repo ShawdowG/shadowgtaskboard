@@ -91,7 +91,7 @@ export default function LoginPage() {
 
     const db = getSupabaseBrowserClient();
     const { error: resetError } = await db.auth.resetPasswordForEmail(trimmed, {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${window.location.origin}/auth/reset`,
     });
     if (resetError) { setError(resetError.message); setStage("idle"); return; }
     setStage("sent");
