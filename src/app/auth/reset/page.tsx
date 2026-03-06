@@ -1,13 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -16,7 +15,8 @@ export default function ResetPasswordPage() {
 
   // On first load, exchange the code for a session.
   useEffect(() => {
-    const code = searchParams.get("code");
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
     if (!code) {
       setError("Missing reset code. Please use the link from your email.");
       setStage("ready");
@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
         setStage("ready");
       }
     })();
-  }, [searchParams]);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
