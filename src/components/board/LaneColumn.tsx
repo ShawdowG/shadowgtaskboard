@@ -81,16 +81,22 @@ export function LaneColumn({
       {/* Cards */}
       <ScrollArea className="flex-1 px-2">
         <div className="flex flex-col gap-2 pb-2 min-h-8">
-          {items.map((item) => (
-            <WorkItemCard
-              key={item.id}
-              item={item}
-              allItems={allItems}
-              laneId={laneId}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-            />
-          ))}
+          {items.length === 0 ? (
+            <p className="mx-1 mt-1 rounded-md bg-white/70 px-2 py-1 text-[11px] text-muted-foreground border border-dashed border-border/50">
+              No items yet in this lane – use quick add below to create one.
+            </p>
+          ) : (
+            items.map((item) => (
+              <WorkItemCard
+                key={item.id}
+                item={item}
+                allItems={allItems}
+                laneId={laneId}
+                onDragStart={onDragStart}
+                onDragEnd={onDragEnd}
+              />
+            ))
+          )}
         </div>
       </ScrollArea>
 
