@@ -170,9 +170,11 @@ function CronCard({
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-semibold leading-snug flex-1">{cron.name}</p>
         <button
+          type="button"
           onClick={() => onDelete(cron.id)}
           className="text-muted-foreground hover:text-destructive transition-colors text-base leading-none shrink-0 mt-0.5"
           title="Delete job"
+          aria-label={`Delete cron job ${cron.name}`}
         >
           ×
         </button>
