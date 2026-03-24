@@ -79,7 +79,10 @@ export function WorkItemCard({
               </span>
             </div>
           )}
-          <p className={`font-medium leading-snug ${depth > 0 ? "text-xs" : "text-sm"}`}>
+          <p
+            className={`font-medium leading-snug ${depth > 0 ? "text-xs" : "text-sm"}`}
+            title={item.title}
+          >
             {item.title}
           </p>
           <div className="flex items-center gap-1.5 flex-wrap">
