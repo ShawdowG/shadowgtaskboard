@@ -78,15 +78,19 @@ export function BoardToolbar() {
       {/* CRON tab — pushed to the right */}
       <div className="ml-auto">
         <button
+          type="button"
           onClick={() => setViewMode(viewMode === "cron" ? "kanban" : "cron")}
           className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-md border transition-colors ${
             viewMode === "cron"
               ? "bg-purple-600 text-white border-purple-600"
               : "text-muted-foreground border-border hover:bg-muted hover:text-foreground"
           }`}
+          aria-pressed={viewMode === "cron"}
+          aria-label={viewMode === "cron" ? "Back to board view" : "Open CRON schedule view"}
         >
           <span className={`h-1.5 w-1.5 rounded-full ${viewMode === "cron" ? "bg-white" : "bg-purple-400"}`} />
-          CRON
+          <span className="hidden sm:inline">CRON</span>
+          <span className="sm:hidden">Cron</span>
         </button>
       </div>
     </div>
