@@ -50,9 +50,15 @@ export function QuickAddItem({ laneId }: QuickAddItemProps) {
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Item title..."
         className="text-sm"
-        onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setOpen(false);
+        }}
+        aria-label="Quick add work item title"
       />
-      <div className="flex gap-2">
+      <p className="mt-1 text-[10px] text-muted-foreground">
+        Press <span className="font-mono">Enter</span> to add, <span className="font-mono">Esc</span> to cancel.
+      </p>
+      <div className="mt-1 flex gap-2">
         <Button type="submit" size="sm" disabled={saving || !title.trim()}>
           Add
         </Button>
