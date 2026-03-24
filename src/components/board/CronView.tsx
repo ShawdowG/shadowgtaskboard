@@ -100,6 +100,11 @@ export function CronView() {
             <p className="text-xs max-w-xs">
               Schedule recurring tasks for your agents. They can poll this list and execute jobs on schedule.
             </p>
+            <p className="text-[11px] max-w-xs text-muted-foreground/90">
+              Tip: use short, human-readable schedules like
+              <span className="font-mono"> every 10m</span> or
+              <span className="font-mono"> daily at 09:00</span> so they map cleanly back to your task IDs (ENG-1100..1106).
+            </p>
             <Button
               size="sm"
               variant="outline"
