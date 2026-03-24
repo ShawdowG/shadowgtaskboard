@@ -41,12 +41,14 @@ export function BoardToolbar() {
           {boardViews.map((v) => (
             <button
               key={v.id}
+              type="button"
               onClick={() => setViewMode(v.id)}
-              className={`px-3 py-1 text-xs transition-colors ${
+              className={`px-3 py-1 text-xs transition-colors outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:z-10 ${
                 viewMode === v.id
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-muted text-muted-foreground"
               }`}
+              aria-pressed={viewMode === v.id}
             >
               {v.label}
             </button>
