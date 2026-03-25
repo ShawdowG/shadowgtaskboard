@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useBoardContext, type ViewMode } from "./BoardContext";
@@ -8,6 +9,8 @@ import { useBoardItems, useProjects, revalidateBoard } from "@/hooks/useBoard";
 import { useCSV } from "@/hooks/useCSV";
 
 export function BoardToolbar() {
+  const pathname = usePathname();
+  const isV2 = pathname?.startsWith("/v2");
   const { viewMode, setViewMode, projectId } = useBoardContext();
   const { data: items = [] } = useBoardItems(projectId);
   const { data: projects = [] } = useProjects();
@@ -88,10 +91,18 @@ export function BoardToolbar() {
               : "text-muted-foreground border-border hover:bg-muted hover:text-foreground"
           }`}
           aria-pressed={viewMode === "cron"}
-          aria-label={viewMode === "cron" ? "Back to board view" : "Open CRON schedule view"}
+          aria-label={
+            viewMode === "cron"
+              ? isV2
+                ? "Back to /v2 board view"
+                : "Back to board view"
+              : isV2
+                ? "Open /v2 CRON schedule view (ENG-1102 QA surface)"
+                : "Open CRON schedule view"
+          }
         >
           <span className={`h-1.5 w-1.5 rounded-full ${viewMode === "cron" ? "bg-white" : "bg-purple-400"}`} />
-          <span className="hidden sm:inline">CRON</span>
+          <span className="hidden sm:inline">{isV2 ? "CRON · v2" : "CRON"}</span>
           <span className="sm:hidden">Cron</span>
         </button>
       </div>
