@@ -40,22 +40,30 @@ export function BoardToolbar() {
     <div className="flex items-center gap-2 px-4 py-2 border-b bg-background/80 backdrop-blur-sm">
       {/* Board view toggle — only shown when not in cron view */}
       {viewMode !== "cron" && (
-        <div className="flex rounded-md border overflow-hidden">
-          {boardViews.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              onClick={() => setViewMode(v.id)}
-              className={`px-3 py-1 text-xs transition-colors outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:z-10 ${
-                viewMode === v.id
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted text-muted-foreground"
-              }`}
-              aria-pressed={viewMode === v.id}
-            >
-              {v.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-md border overflow-hidden">
+            {boardViews.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setViewMode(v.id)}
+                className={`px-3 py-1 text-xs transition-colors outline-none focus-visible:ring-1 focus-visible:ring-primary/60 focus-visible:z-10 ${
+                  viewMode === v.id
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted text-muted-foreground"
+                }`}
+                aria-pressed={viewMode === v.id}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+
+          {isV2 && (
+            <span className="hidden sm:inline-flex items-center rounded-full border border-dashed border-purple-300/80 bg-purple-50/60 px-2 py-0.5 text-[11px] font-medium text-purple-800">
+              /v2 view · ENG-1103 QA surface
+            </span>
+          )}
         </div>
       )}
 
