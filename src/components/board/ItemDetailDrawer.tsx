@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -29,6 +30,8 @@ import { getSupabaseBrowserClient } from "@/lib/supabase";
 const STATUS_OPTIONS = ["backlog", "working", "review", "done"] as const;
 
 export function ItemDetailDrawer() {
+  const pathname = usePathname();
+  const isV2 = pathname?.startsWith("/v2");
   const { openItemId, setOpenItemId, projectId } = useBoardContext();
   const { data: items = [] } = useBoardItems(projectId);
   const item = items.find((i) => i.id === openItemId) ?? null;
@@ -114,12 +117,21 @@ export function ItemDetailDrawer() {
         {item ? (
           <>
             <SheetHeader className="px-6 pt-6 pb-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">Task ID</span>
-                <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5">
-                  {item.task_number != null ? `T-${item.task_number}` : "T-?"}
-                </span>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Task ID</span>
+                  <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5">
+                    {item.task_number != null ? `T-${item.task_number}` : "T-?"}
+                  </span>
+                </div>
+
+                {isV2 && (
+                  <span className="hidden sm:inline-flex items-center rounded-full border border-dashed border-purple-300/80 bg-purple-50/60 px-2 py-0.5 text-[11px] font-medium text-purple-800">
+                    /v2 detail · ENG-1104 QA surface
+                  </span>
+                )}
               </div>
+
               <div className="space-y-1">
                 <span className="text-xs text-muted-foreground">Title</span>
                 <SheetTitle className="text-base">
