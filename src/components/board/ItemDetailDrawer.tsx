@@ -200,7 +200,12 @@ export function ItemDetailDrawer() {
                 <Button size="sm" onClick={handleSave} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </Button>
-                <Button size="sm" variant="destructive" onClick={handleArchive}>
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleArchive}
+                  aria-label="Archive this task"
+                >
                   Archive
                 </Button>
               </div>
