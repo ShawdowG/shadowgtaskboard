@@ -19,6 +19,9 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           </span>
         </span>
         <span className="hidden sm:inline">ENG-1100–ENG-1106 · v2 UI QA surface</span>
+        <span className="sr-only">
+          This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
+        </span>
       </div>
       <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
     </div>
