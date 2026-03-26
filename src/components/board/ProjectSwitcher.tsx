@@ -57,7 +57,11 @@ export function ProjectSwitcher() {
       <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide shrink-0">
         Projects
       </span>
-      <Tabs value={projectId ?? ""} onValueChange={setProjectId}>
+      <Tabs
+        value={projectId ?? ""}
+        onValueChange={setProjectId}
+        aria-label="ShadowG projects for this board"
+      >
         <TabsList className="h-8">
           {projects.map((p) => (
             <TabsTrigger key={p.id} value={p.id} className="text-xs h-7 px-3">
