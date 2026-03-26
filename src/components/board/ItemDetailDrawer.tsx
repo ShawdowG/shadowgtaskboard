@@ -233,7 +233,9 @@ export function ItemDetailDrawer() {
                   <div className="space-y-2">
                     {/* Existing subtasks */}
                     {children.length === 0 && (
-                      <p className="text-xs text-muted-foreground">No sub-tasks yet.</p>
+                      <p className="text-xs text-muted-foreground">
+                        No sub-tasks yet – use the field below to add a quick sub-task.
+                      </p>
                     )}
                     {children.map((child) => (
                       <div
