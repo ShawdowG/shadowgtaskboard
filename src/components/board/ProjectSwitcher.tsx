@@ -70,7 +70,13 @@ export function ProjectSwitcher() {
           ))}
         </TabsList>
       </Tabs>
-      <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setShowNew(true)}>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-8 text-xs"
+        onClick={() => setShowNew(true)}
+        aria-label="Create new project for this board"
+      >
         + New
       </Button>
       <NewProjectDialog
