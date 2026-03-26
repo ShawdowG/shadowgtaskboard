@@ -54,6 +54,7 @@ export function BoardToolbar() {
                 }`}
                 aria-pressed={viewMode === v.id}
                 aria-current={viewMode === v.id ? "page" : undefined}
+                aria-label={viewMode === v.id ? `${v.label} view (current)` : `Switch to ${v.label} view`}
               >
                 {v.label}
               </button>
