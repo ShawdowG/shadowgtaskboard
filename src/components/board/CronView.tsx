@@ -78,6 +78,7 @@ export function CronView() {
           className="h-8 text-xs bg-purple-600 hover:bg-purple-700 text-white"
           onClick={() => setShowAdd(true)}
           disabled={!projectId}
+          aria-label="Open cron job creation dialog"
         >
           + New Job
         </Button>
