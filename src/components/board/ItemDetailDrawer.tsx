@@ -197,7 +197,12 @@ export function ItemDetailDrawer() {
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" onClick={handleSave} disabled={saving}>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={saving}
+                  aria-label="Save changes to this task"
+                >
                   {saving ? "Saving..." : "Save"}
                 </Button>
                 <Button
