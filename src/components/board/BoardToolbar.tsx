@@ -53,6 +53,7 @@ export function BoardToolbar() {
                     : "hover:bg-muted text-muted-foreground"
                 }`}
                 aria-pressed={viewMode === v.id}
+                aria-current={viewMode === v.id ? "page" : undefined}
               >
                 {v.label}
               </button>
