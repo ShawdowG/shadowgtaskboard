@@ -214,6 +214,7 @@ function CronCard({
               ? "bg-green-50 text-green-700 border-green-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
               : "bg-muted text-muted-foreground border-border hover:bg-green-50 hover:text-green-700 hover:border-green-200"
           }`}
+          aria-label={cron.enabled ? `Pause cron job ${cron.name}` : `Activate cron job ${cron.name}`}
         >
           <span className={`h-1.5 w-1.5 rounded-full ${cron.enabled ? "bg-green-500" : "bg-muted-foreground"}`} />
           {cron.enabled ? "Active" : "Paused"}
