@@ -35,7 +35,10 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="flex h-full gap-3 p-4 overflow-x-auto">
+    <div
+      className="flex h-full gap-3 p-4 overflow-x-auto"
+      aria-label="Kanban board grouped by status columns"
+    >
       {LANES.map((lane) => (
         <LaneColumn
           key={lane.id}
