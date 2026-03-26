@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useBoardContext } from "./BoardContext";
 import { useProjects } from "@/hooks/useBoard";
 import { getSupabaseBrowserClient } from "@/lib/supabase";
@@ -12,6 +13,8 @@ import { ItemDetailDrawer } from "./ItemDetailDrawer";
 import { CronView } from "./CronView";
 
 export function BoardShell() {
+  const pathname = usePathname();
+  const isV2 = pathname?.startsWith("/v2");
   const { projectId, setProjectId, viewMode } = useBoardContext();
   const { data: projects } = useProjects();
 
@@ -38,7 +41,11 @@ export function BoardShell() {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <ProjectSwitcher />
       <BoardToolbar />
-      <main className="flex-1 overflow-hidden" role="main" aria-label="ShadowG board view">
+      <main
+        className="flex-1 overflow-hidden"
+        role="main"
+        aria-label={isV2 ? "ShadowG /v2 board view" : "ShadowG board view"}
+      >
         {viewMode === "cron" ? (
           <CronView />
         ) : viewMode === "kanban" ? (
