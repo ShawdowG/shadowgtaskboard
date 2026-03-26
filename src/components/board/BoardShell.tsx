@@ -38,7 +38,7 @@ export function BoardShell() {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <ProjectSwitcher />
       <BoardToolbar />
-      <main className="flex-1 overflow-hidden">
+      <main className="flex-1 overflow-hidden" role="main" aria-label="ShadowG board view">
         {viewMode === "cron" ? (
           <CronView />
         ) : viewMode === "kanban" ? (
