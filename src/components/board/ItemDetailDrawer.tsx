@@ -178,7 +178,11 @@ export function ItemDetailDrawer() {
                   />
                 </div>
 
-                <Badge variant="outline" className="text-xs">
+                <Badge
+                  variant="outline"
+                  className="text-xs"
+                  aria-label={`Task depth ${item.depth}`}
+                >
                   depth {item.depth}
                 </Badge>
               </div>
