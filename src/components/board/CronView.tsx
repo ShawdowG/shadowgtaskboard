@@ -112,6 +112,7 @@ export function CronView() {
               className="mt-2"
               onClick={() => setShowAdd(true)}
               disabled={!projectId}
+              aria-label="Create the first cron job for this project"
             >
               + Create first job
             </Button>
