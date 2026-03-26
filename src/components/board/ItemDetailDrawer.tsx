@@ -113,7 +113,10 @@ export function ItemDetailDrawer() {
 
   return (
     <Sheet open={!!openItemId} onOpenChange={(open) => !open && setOpenItemId(null)}>
-      <SheetContent className="w-[480px] sm:w-[540px] overflow-y-auto flex flex-col gap-0 p-0">
+      <SheetContent
+        className="w-[480px] sm:w-[540px] overflow-y-auto flex flex-col gap-0 p-0"
+        aria-label={isV2 ? "ShadowG /v2 task detail · ENG-1104 QA surface" : "ShadowG task detail"}
+      >
         {item ? (
           <>
             <SheetHeader className="px-6 pt-6 pb-4 space-y-3">
