@@ -69,7 +69,10 @@ export function CronView() {
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-purple-400" />
           <h2 className="text-sm font-semibold text-purple-700 tracking-wide uppercase">Cron Jobs</h2>
-          <span className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+          <span
+            className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-0.5"
+            aria-label={`Total cron jobs: ${crons.length}`}
+          >
             {crons.length}
           </span>
         </div>
