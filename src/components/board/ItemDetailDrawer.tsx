@@ -123,7 +123,10 @@ export function ItemDetailDrawer() {
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground">Task ID</span>
-                  <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5">
+                  <span
+                    className="text-xs font-mono font-semibold text-muted-foreground bg-muted/60 border border-border/50 rounded px-1.5 py-0.5"
+                    aria-label={item.task_number != null ? `Task ID T-${item.task_number}` : "Task ID unknown"}
+                  >
                     {item.task_number != null ? `T-${item.task_number}` : "T-?"}
                   </span>
                 </div>
