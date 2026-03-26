@@ -39,7 +39,10 @@ export function SwimLaneBoard() {
   });
 
   return (
-    <div className="h-full overflow-y-auto divide-y divide-border">
+    <div
+      className="h-full overflow-y-auto divide-y divide-border"
+      aria-label="Swim lane board grouped by assignee"
+    >
       {assignees.map((assignee) => {
         const label = assignee === "__unassigned__" ? "Unassigned" : assignee;
         const laneItems = items.filter(
