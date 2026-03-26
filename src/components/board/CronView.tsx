@@ -264,11 +264,21 @@ function AddCronDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-sm">
+      <DialogContent
+        className="max-w-sm"
+        aria-describedby="cron-dialog-helper"
+      >
         <DialogHeader>
           <DialogTitle>New Cron Job</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-3 mt-2">
+        <p
+          id="cron-dialog-helper"
+          className="mt-1 text-[11px] text-muted-foreground/90"
+        >
+          Define a human-readable schedule (e.g. <span className="font-mono">every 10m</span> or
+          <span className="font-mono">daily at 09:00</span>) so agents can map runs back to task IDs.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-3 mt-3">
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Name</label>
             <Input
