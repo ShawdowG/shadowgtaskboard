@@ -74,7 +74,14 @@ export function BoardToolbar() {
       {/* CSV tools — only when on board views */}
       {viewMode !== "cron" && (
         <>
-          <Button size="sm" variant="outline" className="h-7 text-xs" onClick={handleExport} disabled={!projectId}>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs"
+            onClick={handleExport}
+            disabled={!projectId}
+            aria-label="Export current board items as CSV"
+          >
             Export CSV
           </Button>
           <Button
@@ -83,6 +90,7 @@ export function BoardToolbar() {
             className="h-7 text-xs"
             onClick={() => fileRef.current?.click()}
             disabled={!projectId}
+            aria-label="Import board items from a CSV file"
           >
             Import CSV
           </Button>
