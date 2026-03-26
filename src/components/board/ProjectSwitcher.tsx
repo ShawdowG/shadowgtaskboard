@@ -37,7 +37,12 @@ export function ProjectSwitcher() {
     return (
       <div className="border-b px-4 py-2 flex items-center gap-3">
         <span className="text-sm text-muted-foreground">No projects yet.</span>
-        <Button size="sm" variant="outline" onClick={() => setShowNew(true)}>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setShowNew(true)}
+          aria-label="Create first project for this board"
+        >
           + New project
         </Button>
         <NewProjectDialog
