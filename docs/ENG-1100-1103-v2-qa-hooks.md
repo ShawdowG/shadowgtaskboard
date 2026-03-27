@@ -29,3 +29,12 @@ This note documents the current QA/a11y contract for the `/v2` surface.
   - `v2-board-region` exposes `role="main"`, `aria-label`, and `tabIndex={-1}`.
 
 These hooks are intentionally v2-only and should be kept stable while ENG-1100–ENG-1106 are active, so test suites can rely on them without flakiness.
+
+## ENG-1104: proposed E2E spec skeleton
+
+Use these as starting points for Playwright/Cypress tests (not yet implemented):
+
+- "v2 smoke layout": assert all core test IDs exist on `/v2` and that `/` does not expose the v2-only IDs.
+- "v2 skip link": tab to `v2-skip-to-board-link`, activate it, assert focus is on `#v2-board-main` and `role="main"` is present.
+- "v2 banner semantics": check `v2-qa-banner` has `role="banner"`, the label text matches, and `aria-describedby` resolves to `v2-qa-description`.
+- "v2 mobile helper copy": in a narrow viewport, assert `v2-mobile-helper` is visible while the desktop label group remains accessible.
