@@ -7,10 +7,14 @@ import Link from "next/link";
 // primary board while keeping it visually lightweight.
 export default function V2Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div
+      data-testid="v2-root"
+      className="flex h-screen flex-col bg-background"
+    >
       <div
         role="banner"
         aria-label="ShadowG TaskBoard v2 QA surface (ENG-1100–ENG-1106)"
+        data-testid="v2-qa-banner"
         className="border-b bg-muted/40 px-4 py-1 text-xs text-muted-foreground flex items-center justify-between gap-2"
       >
         <span className="inline-flex items-center gap-2">
