@@ -17,7 +17,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           <span className="font-mono text-[11px] uppercase tracking-wide text-purple-700">
             ShadowG TaskBoard /v2
           </span>
-          <span className="hidden rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800 shadow-xs sm:inline-flex">
+          <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800 shadow-xs sm:inline-flex">
             Beta
           </span>
         </span>
