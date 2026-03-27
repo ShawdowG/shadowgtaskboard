@@ -48,7 +48,12 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
         </span>
       </div>
-      <div className="flex-1 min-h-0 overflow-hidden">{children}</div>
+      <div
+        className="flex-1 min-h-0 overflow-hidden"
+        data-testid="v2-board-region"
+      >
+        {children}
+      </div>
     </div>
   );
 }
