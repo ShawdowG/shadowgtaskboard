@@ -56,6 +56,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         className="flex-1 min-h-0 overflow-hidden"
         role="main"
         aria-label="ShadowG TaskBoard v2 board"
+        tabIndex={-1}
         data-testid="v2-board-region"
       >
         {children}
