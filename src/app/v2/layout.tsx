@@ -41,6 +41,9 @@ export default function V2Layout({ children }: { children: ReactNode }) {
             Back to main board
           </Link>
         </span>
+        <span className="text-[10px] text-muted-foreground sm:hidden" data-testid="v2-mobile-helper">
+          This is the v2 QA surface. Use &quot;Back to main board&quot; to return to the primary board.
+        </span>
         <span className="sr-only">
           This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
         </span>
