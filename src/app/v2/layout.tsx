@@ -14,6 +14,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
       <div
         role="banner"
         aria-label="ShadowG TaskBoard v2 QA surface (ENG-1100–ENG-1106)"
+        aria-describedby="v2-qa-description"
         data-testid="v2-qa-banner"
         className="border-b bg-muted/40 px-3 py-1.5 text-[11px] text-muted-foreground flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2"
       >
@@ -44,7 +45,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         <span className="text-[10px] text-muted-foreground sm:hidden" data-testid="v2-mobile-helper">
           This is the v2 QA surface. Use &quot;Back to main board&quot; to return to the primary board.
         </span>
-        <span className="sr-only">
+        <span id="v2-qa-description" className="sr-only">
           This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
         </span>
       </div>
