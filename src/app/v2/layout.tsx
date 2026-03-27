@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 
 // ShadowG v2 layout wrapper.
 // This lets us layer v2-only UX/QA affordances without touching the root app layout.
+// ENG-1100: make the /v2 surface explicitly labeled and easy to exit back to the
+// primary board while keeping it visually lightweight.
 export default function V2Layout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -18,7 +21,18 @@ export default function V2Layout({ children }: { children: ReactNode }) {
             Beta
           </span>
         </span>
-        <span className="hidden sm:inline">ENG-1100–ENG-1106 · v2 UI QA surface</span>
+        <span className="hidden items-center gap-2 text-[11px] sm:inline-flex">
+          <span>ENG-1100–ENG-1106 · v2 UI QA surface</span>
+          <span aria-hidden="true" className="text-muted-foreground">
+            ·
+          </span>
+          <Link
+            href="/"
+            className="underline-offset-2 hover:underline"
+          >
+            Back to main board
+          </Link>
+        </span>
         <span className="sr-only">
           This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
         </span>
