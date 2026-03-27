@@ -5,6 +5,8 @@ import Link from "next/link";
 // This lets us layer v2-only UX/QA affordances without touching the root app layout.
 // ENG-1100: make the /v2 surface explicitly labeled and easy to exit back to the
 // primary board while keeping it visually lightweight.
+// ENG-1101/ENG-1102: expose stable QA and a11y hooks for the v2 shell, banner,
+// helper copy, and main board region via data-testid + ARIA attributes.
 export default function V2Layout({ children }: { children: ReactNode }) {
   return (
     <div
