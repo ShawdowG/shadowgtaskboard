@@ -15,7 +15,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         role="banner"
         aria-label="ShadowG TaskBoard v2 QA surface (ENG-1100–ENG-1106)"
         data-testid="v2-qa-banner"
-        className="border-b bg-muted/40 px-4 py-1 text-xs text-muted-foreground flex items-center justify-between gap-2"
+        className="border-b bg-muted/40 px-3 py-1.5 text-[11px] text-muted-foreground flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2"
       >
         <span className="inline-flex items-center gap-2">
           <span className="font-mono text-[11px] uppercase tracking-wide text-purple-700">
