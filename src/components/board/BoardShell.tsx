@@ -43,7 +43,7 @@ export function BoardShell() {
       <BoardToolbar />
       <main
         className="flex-1 overflow-hidden"
-        role="main"
+        role={isV2 ? "region" : "main"}
         aria-label={isV2 ? "ShadowG /v2 board view" : "ShadowG board view"}
         data-testid={isV2 ? "v2-board-view" : undefined}
       >
