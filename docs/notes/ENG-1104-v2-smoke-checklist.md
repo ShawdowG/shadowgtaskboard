@@ -33,4 +33,4 @@ On the root route (`/`), assert that **none** of the above v2-only `data-testid`
 - [ ] Tabbing into the page reaches `v2-skip-to-board-link`.
 - [ ] Activating the skip link moves focus to `#v2-board-main` (the `v2-board-region` element).
 
-Keep this checklist in sync with `docs/ENG-1100-1103-v2-qa-hooks.md` as v2 evolves.
+Keep this checklist in sync with `docs/ENG-1100-1103-v2-qa-hooks.md` and the skip-link notes in `docs/notes/ENG-1103-skip-link-notes.md` as v2 evolves.
