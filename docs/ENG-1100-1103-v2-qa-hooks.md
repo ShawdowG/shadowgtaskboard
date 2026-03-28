@@ -36,7 +36,9 @@ These hooks are intentionally v2-only and should be kept stable while ENG-1100â€
 
 Use these as starting points for Playwright/Cypress tests (not yet implemented):
 
-- "v2 smoke layout": assert all core test IDs exist on `/v2` and that `/` does not expose the v2-only IDs.
-- "v2 skip link": tab to `v2-skip-to-board-link`, activate it, assert focus is on `#v2-board-main` and `role="main"` is present.
+- "v2 smoke layout":
+  - On `/v2` assert presence of: `v2-root`, `v2-qa-banner`, `v2-qa-label`, `v2-beta-pill`, `v2-back-to-main-link`, `v2-back-to-main-link-mobile`, `v2-mobile-helper`, `v2-qa-description`, `v2-board-region`, `v2-board-view`, `v2-skip-to-board-link`.
+  - On `/` assert none of the above v2-only `data-testid`s are present.
+- "v2 skip link": tab to `v2-skip-to-board-link`, activate it, assert focus is on `#v2-board-main` and `role="main"` is present on `v2-board-region`.
 - "v2 banner semantics": check `v2-qa-banner` has `role="banner"`, the label text matches, and `aria-describedby` resolves to `v2-qa-description`.
 - "v2 mobile helper copy": in a narrow viewport, assert `v2-mobile-helper` is visible while the desktop label group remains accessible.
