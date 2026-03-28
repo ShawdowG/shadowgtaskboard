@@ -25,5 +25,6 @@ Goal: ensure the `/v2` skip link provides a reliable, testable keyboard path dir
   - Activate the link.
   - Assert `document.activeElement` corresponds to `v2-board-region`.
   - Assert `v2-board-region` has `role="main"`, `tabIndex=-1`, and the expected `aria-label`.
+  - Assert `v2-qa-banner` still has `aria-describedby="v2-qa-description"` so banner/skip-link semantics stay wired.
 
 Keep this in sync with `docs/ENG-1100-1103-v2-qa-hooks.md` and the ENG-1104 smoke checklist as the v2 shell evolves.
