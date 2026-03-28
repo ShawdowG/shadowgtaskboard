@@ -5,6 +5,8 @@ Use this as a starting point for wiring Playwright-based E2E checks for the `/v2
 ## Suggested file
 - `tests/e2e/v2-smoke.spec.ts`
 
+> Note: this assumes Playwright is configured with `use.baseURL` pointing at the local dev server (e.g. `http://localhost:3000`) so `page.goto("/v2")` resolves correctly.
+
 ## Pseudo-code outline
 
 ```ts
