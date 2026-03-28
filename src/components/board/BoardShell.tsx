@@ -41,6 +41,10 @@ export function BoardShell() {
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <ProjectSwitcher />
       <BoardToolbar />
+      {/* ENG-1102: on /v2 the layout already exposes the main landmark via
+          v2-board-region, so we treat the inner board as a labeled region
+          instead of a second main. On the root (/) route, this remains the
+          primary main landmark. */}
       <main
         className="flex-1 overflow-hidden"
         role={isV2 ? "region" : "main"}
