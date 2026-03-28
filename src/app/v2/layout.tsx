@@ -66,6 +66,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         </span>
         <span id="v2-qa-description" className="sr-only">
           This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
+          Use Back to main board at the top of the page when you want to return to the primary board.
         </span>
       </div>
       <div
