@@ -23,7 +23,7 @@ This note documents the current QA/a11y contract for the `/v2` surface.
 ## Intended QA checks
 
 - `/v2` renders with all of the following present:
-  - `v2-root`, `v2-qa-banner`, `v2-qa-label`, `v2-beta-pill`, `v2-back-to-main-link`, `v2-mobile-helper`, `v2-board-region`, `v2-skip-to-board-link`.
+  - `v2-root`, `v2-qa-banner`, `v2-qa-label`, `v2-beta-pill`, `v2-back-to-main-link`, `v2-back-to-main-link-mobile`, `v2-mobile-helper`, `v2-qa-description`, `v2-board-region`, `v2-board-view`, `v2-skip-to-board-link`.
 - Skip link behavior:
   - When the skip link receives keyboard focus and is activated, focus moves to `#v2-board-main` and the main region is visible.
 - A11y wiring:
