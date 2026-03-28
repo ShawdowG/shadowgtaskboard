@@ -17,7 +17,8 @@ This note documents the current QA/a11y contract for the `/v2` surface.
   - Mobile helper copy: `<span data-testid="v2-mobile-helper">This is the v2 QA surface…</span>` (mobile-only)
   - SR-only description: `<span id="v2-qa-description" className="sr-only" data-testid="v2-qa-description">…</span>`
 - Main board region (ENG-1101/ENG-1102/ENG-1103)
-  - `<div id="v2-board-main" data-testid="v2-board-region" role="main" aria-label="ShadowG TaskBoard v2 board" tabIndex={-1}>`
+  - Layout landmark: `<div id="v2-board-main" data-testid="v2-board-region" role="main" aria-label="ShadowG TaskBoard v2 board" tabIndex={-1}>`
+  - Inner board region (ENG-1102): `<main data-testid="v2-board-view" role="region" aria-label="ShadowG /v2 board view">…</main>`
 
 ## Intended QA checks
 
