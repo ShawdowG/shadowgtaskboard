@@ -45,6 +45,7 @@ export function BoardShell() {
         className="flex-1 overflow-hidden"
         role="main"
         aria-label={isV2 ? "ShadowG /v2 board view" : "ShadowG board view"}
+        data-testid={isV2 ? "v2-board-view" : undefined}
       >
         {viewMode === "cron" ? (
           <CronView />
