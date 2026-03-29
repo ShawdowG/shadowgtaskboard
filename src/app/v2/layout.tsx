@@ -43,6 +43,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           <span
             className="font-mono text-[11px] uppercase tracking-wide text-purple-700"
             data-testid="v2-banner-title"
+            data-qa="v2-banner-title"
           >
             ShadowG TaskBoard /v2
           </span>
