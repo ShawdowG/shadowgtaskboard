@@ -93,6 +93,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         className="flex-1 min-h-0 overflow-hidden"
         role="main"
         aria-labelledby="v2-board-heading"
+        aria-describedby="v2-qa-description"
         tabIndex={-1}
         data-testid="v2-board-region"
       >
