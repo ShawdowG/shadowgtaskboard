@@ -102,6 +102,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         aria-describedby="v2-qa-description"
         tabIndex={-1}
         data-testid="v2-board-region"
+        data-qa="v2-board-region"
       >
         <h1
           id="v2-board-heading"
