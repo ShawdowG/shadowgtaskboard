@@ -95,6 +95,9 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         tabIndex={-1}
         data-testid="v2-board-region"
       >
+        <h1 className="sr-only" data-testid="v2-board-heading">
+          ShadowG TaskBoard v2 board
+        </h1>
         {children}
       </div>
     </div>
