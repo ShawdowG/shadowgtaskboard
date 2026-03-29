@@ -36,6 +36,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         aria-label="ShadowG TaskBoard v2 QA surface (ENG-1100–ENG-1106)"
         aria-describedby="v2-qa-description"
         data-testid="v2-qa-banner"
+        data-qa="v2-qa-banner"
         className="border-b bg-muted/40 px-3 py-1.5 text-[11px] text-muted-foreground flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2"
       >
         <span className="inline-flex items-center gap-2">
