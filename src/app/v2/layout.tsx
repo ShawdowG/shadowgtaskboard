@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 
@@ -7,6 +8,13 @@ import Link from "next/link";
 // primary board while keeping it visually lightweight.
 // ENG-1101/ENG-1102: expose stable QA and a11y hooks for the v2 shell, banner,
 // helper copy, and main board region via data-testid + ARIA attributes.
+
+export const metadata: Metadata = {
+  title: "ShadowG TaskBoard v2",
+  description:
+    "ShadowG TaskBoard /v2 – dedicated QA surface for ENG-1100–ENG-1106.",
+};
+
 export default function V2Layout({ children }: { children: ReactNode }) {
   return (
     <div
@@ -52,9 +60,11 @@ export default function V2Layout({ children }: { children: ReactNode }) {
             Back to main board
           </Link>
         </span>
-        <span className="text-[10px] text-muted-foreground sm:hidden" data-testid="v2-mobile-helper">
-          This is the v2 QA surface. Use
-          {" "}
+        <span
+          className="text-[10px] text-muted-foreground sm:hidden"
+          data-testid="v2-mobile-helper"
+        >
+          This is the v2 QA surface. Use{" "}
           <Link
             href="/"
             className="underline-offset-2 hover:underline"
@@ -69,8 +79,9 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           className="sr-only"
           data-testid="v2-qa-description"
         >
-          This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and agent workflows.
-          Use Back to main board at the top of the page when you want to return to the primary board.
+          This /v2 route is a dedicated QA surface for refining ShadowG TaskBoard UX and
+          agent workflows. Use Back to main board at the top of the page when you want
+          to return to the primary board.
         </span>
       </div>
       <div
