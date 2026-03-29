@@ -19,6 +19,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
   return (
     <div
       data-testid="v2-root"
+      data-qa="v2-shell-root"
       className="flex h-screen flex-col bg-background"
       aria-label="ShadowG TaskBoard v2 shell"
     >
