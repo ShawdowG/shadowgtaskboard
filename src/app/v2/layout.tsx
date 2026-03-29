@@ -60,7 +60,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           className="hidden items-center gap-2 text-[11px] sm:inline-flex"
           data-testid="v2-qa-controls-desktop"
         >
-          <span data-testid="v2-qa-label">ENG-1100–ENG-1106 · v2 UI QA surface</span>
+          <span data-testid="v2-qa-label">ENG-1100–ENG-1106 · ShadowG TaskBoard v2 QA surface</span>
           <span aria-hidden="true" className="text-muted-foreground">
             ·
           </span>
