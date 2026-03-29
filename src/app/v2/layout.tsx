@@ -49,6 +49,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
           <span
             className="rounded-full bg-purple-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-purple-800 shadow-xs sm:inline-flex"
             data-testid="v2-beta-pill"
+            data-qa="v2-beta-pill"
             aria-label="ShadowG TaskBoard v2 beta surface"
           >
             Beta
