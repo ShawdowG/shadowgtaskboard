@@ -70,6 +70,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
             href="/"
             className="underline-offset-2 hover:underline"
             data-testid="v2-back-to-main-link"
+            data-qa="v2-back-to-main-link"
           >
             Back to main board
           </Link>
