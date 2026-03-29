@@ -70,6 +70,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         <span
           className="text-[10px] text-muted-foreground sm:hidden"
           data-testid="v2-mobile-helper"
+          data-qa="v2-qa-controls-mobile"
         >
           You are viewing the ShadowG TaskBoard /v2 QA surface. Use{" "}
           <Link
