@@ -27,6 +27,7 @@ export default function V2Layout({ children }: { children: ReactNode }) {
         href="#v2-board-main"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded focus:bg-background focus:px-3 focus:py-1 focus:text-xs focus:shadow"
         data-testid="v2-skip-to-board-link"
+        data-qa="v2-skip-to-board-link"
         aria-label="Skip to ShadowG TaskBoard v2 board"
       >
         Skip to v2 board
